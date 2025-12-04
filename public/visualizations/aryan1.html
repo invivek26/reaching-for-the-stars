@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 2.5em;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            line-height: 1.3;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 35px;
+            font-size: 1.2em;
+            letter-spacing: 0.3px;
+            line-height: 1.5;
+        }
+
+        #treemap {
+            width: 100%;
+            height: 800px;
+            margin: 0 auto;
+        }
+
+        .node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .node:hover {
+            opacity: 0.9;
+            filter: brightness(1.1);
+        }
+
+        .node-label {
+            pointer-events: none;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .category-label {
+            font-weight: bold;
+            font-size: 18px;
+            fill: #000;
+            letter-spacing: 0.5px;
+        }
+
+        .tech-name {
+            font-weight: bold;
+            font-size: 14px;
+            fill: #000;
+            letter-spacing: 0.2px;
+        }
+
+        .impact-level {
+            font-size: 12px;
+            fill: #333;
+            font-style: italic;
+            letter-spacing: 0.2px;
+        }
+
+        .impact-detail {
+            font-size: 11px;
+            fill: #000;
+            letter-spacing: 0.1px;
+            line-height: 1.2;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            z-index: 1000;
+            line-height: 1.5;
+        }
+
+        .tooltip.active {
+            opacity: 1;
+        }
+
+        .tooltip h3 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+            font-size: 20px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .tooltip-row {
+            margin: 12px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            line-height: 1.6;
+        }
+
+        .tooltip-label {
+            font-weight: 600;
+            color: #555;
+            margin-right: 15px;
+            font-size: 15px;
+        }
+
+        .tooltip-value {
+            color: #2c3e50;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .chart-container {
+            margin-top: 18px;
+            border-top: 1px solid #ddd;
+            padding-top: 18px;
+        }
+
+        .chart-title {
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #2c3e50;
+            font-size: 16px;
+            letter-spacing: 0.2px;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 25px;
+            gap: 25px;
+        }
+
+        .legend-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            border: 2px solid #333;
+        }
+
+        .legend-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            letter-spacing: 0.3px;
+        }
+
+        .axis {
+            font-size: 12px;
+        }
+
+        .grid line {
+            stroke: #e0e0e0;
+            stroke-opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <h1>Space Exploration: Byproduct Technologies Impacting Life on Earth</h1>
+    <p class="subtitle">Click on any technology to see economic impact and year-over-year growth</p>
+
+    <div id="treemap"></div>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ff9999;"></div>
+            <span class="legend-label">Medical</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #66cdaa;"></div>
+            <span class="legend-label">Communication</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #90ee90;"></div>
+            <span class="legend-label">Water</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ffcc99;"></div>
+            <span class="legend-label">Safety</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ffffcc;"></div>
+            <span class="legend-label">Consumer</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #b0e0e6;"></div>
+            <span class="legend-label">Food</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #add8e6;"></div>
+            <span class="legend-label">Environment</span>
+        </div>
+    </div>
+
+    <div class="tooltip"></div>
+
+    <script>
+        const margin = {top: 10, right: 10, bottom: 10, left: 10};
+        const width = document.getElementById('treemap').clientWidth - margin.left - margin.right;
+        const height = 800 - margin.top - margin.bottom;
+
+        const svg = d3.select("#treemap").append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+
+        const tooltip = d3.select(".tooltip");
+
+        d3.json('/data/econ_impact.json').then(data => {
+            const root = d3.hierarchy(data)
+                .sum(d => d.value)
+                .sort((a, b) => b.value - a.value);
+
+            d3.treemap()
+                .size([width, height])
+                .padding(3)
+                .paddingInner(2)
+                .round(true)
+                (root);
+
+            const colorScale = d3.scaleOrdinal()
+                .domain(data.children.map(d => d.name))
+                .range(data.children.map(d => d.color));
+
+        function showTooltip(event, d) {
+            const formatCurrency = d3.format(",.1f");
+            const formatNumber = d3.format(",");
+
+            let tooltipContent = `<h3>${d.data.name}</h3>`;
+            tooltipContent += `<div class="tooltip-row">
+                <span class="tooltip-label">Category:</span>
+                <span class="tooltip-value">${d.parent.data.name}</span>
+            </div>`;
+            tooltipContent += `<div class="tooltip-row">
+                <span class="tooltip-label">Economic Value:</span>
+                <span class="tooltip-value">$${formatCurrency(d.data.economicValue)}B</span>
+            </div>`;
+            tooltipContent += `<div class="tooltip-row">
+                <span class="tooltip-label">Impact:</span>
+                <span class="tooltip-value">${d.data.impactDetail}</span>
+            </div>`;
+
+            if (d.data.livesSaved > 0) {
+                tooltipContent += `<div class="tooltip-row">
+                    <span class="tooltip-label">Lives Saved:</span>
+                    <span class="tooltip-value" style="color: #e74c3c;">${formatNumber(d.data.livesSaved)}</span>
+                </div>`;
+            }
+
+            if (d.data.yearlyGrowth && d.data.yearlyGrowth.length > 0) {
+                tooltipContent += `<div class="chart-container">
+                    <div class="chart-title">Year-over-Year Economic Growth ($B)</div>
+                    <svg id="growth-chart" width="350" height="150"></svg>
+                </div>`;
+            }
+
+            tooltip.html(tooltipContent).classed("active", true);
+
+            if (d.data.yearlyGrowth && d.data.yearlyGrowth.length > 0) {
+                drawGrowthChart(d.data.yearlyGrowth, colorScale(d.parent.data.name));
+            }
+
+            const tooltipNode = tooltip.node();
+            const tooltipRect = tooltipNode.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
+            let left = event.pageX + 15;
+            let top = event.pageY - 15;
+
+            if (left + tooltipRect.width > viewportWidth) {
+                left = event.pageX - tooltipRect.width - 15;
+            }
+
+            if (top + tooltipRect.height > viewportHeight) {
+                top = event.pageY - tooltipRect.height - 15;
+            }
+
+            if (left < 0) {
+                left = 15;
+            }
+
+            if (top < 0) {
+                top = 15;
+            }
+
+            tooltip.style("left", left + "px")
+                  .style("top", top + "px");
+        }
+
+        function drawGrowthChart(data, color) {
+            const chartSvg = d3.select("#growth-chart");
+            chartSvg.selectAll("*").remove();
+
+            const chartMargin = {top: 10, right: 30, bottom: 30, left: 50};
+            const chartWidth = 350 - chartMargin.left - chartMargin.right;
+            const chartHeight = 150 - chartMargin.top - chartMargin.bottom;
+
+            const g = chartSvg.append("g").attr("transform", `translate(${chartMargin.left},${chartMargin.top})`);
+            const x = d3.scaleLinear().domain(d3.extent(data, d => d.year)).range([0, chartWidth]);
+            const y = d3.scaleLinear().domain([0, d3.max(data, d => d.value) * 1.1]).range([chartHeight, 0]);
+
+            g.append("g").attr("class", "grid").call(d3.axisLeft(y).tickSize(-chartWidth).tickFormat("")
+                );
+            g.append("g").attr("transform", `translate(0,${chartHeight})`).attr("class", "axis").call(d3.axisBottom(x).tickFormat(d3.format("d")));
+            g.append("g").attr("class", "axis").call(d3.axisLeft(y).ticks(5));
+
+            const line = d3.line().x(d => x(d.year)).y(d => y(d.value)).curve(d3.curveMonotoneX);
+            g.append("path").datum(data).attr("fill", "none").attr("stroke", color).attr("stroke-width", 3).attr("d", line);
+            const area = d3.area().x(d => x(d.year)).y0(chartHeight).y1(d => y(d.value)).curve(d3.curveMonotoneX);
+            g.append("path").datum(data).attr("fill", color).attr("opacity", 0.2).attr("d", area);
+            g.selectAll(".dot").data(data).enter().append("circle").attr("class", "dot").attr("cx", d => x(d.year)).attr("cy", d => y(d.value)).attr("r", 4).attr("fill", color).attr("stroke", "#fff").attr("stroke-width", 2);
+        }
+
+
+        const nodes = svg.selectAll("g").data(root.leaves()).enter().append("g").attr("transform", d => `translate(${d.x0},${d.y0})`);
+
+        nodes.append("rect").attr("class", "node").attr("width", d => d.x1 - d.x0).attr("height", d => d.y1 - d.y0).attr("fill", d => colorScale(d.parent.data.name)).attr("stroke", "#333").attr("stroke-width", 2).on("mouseover", function(event, d) {
+                d3.select(this).transition().duration(200).attr("stroke-width", 4).attr("stroke", "#000");
+            }).on("mouseout", function(event, d) {
+                d3.select(this).transition().duration(200).attr("stroke-width", 2).attr("stroke", "#333");
+                tooltip.classed("active", false);
+            }).on("mousemove", function(event, d) {
+                showTooltip(event, d);
+            });
+
+        nodes.each(function(d) {
+            const node = d3.select(this);
+            const rectWidth = d.x1 - d.x0;
+            const rectHeight = d.y1 - d.y0;
+
+            const padding = Math.min(6, rectWidth * 0.05, rectHeight * 0.05);
+            const availableWidth = Math.max(0, rectWidth - (padding * 2));
+            const availableHeight = Math.max(0, rectHeight - (padding * 2));
+
+            if (availableWidth < 30 || availableHeight < 20) {
+                return;
+            }
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            function measureText(text, fontSize, fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif") {
+                ctx.font = `${fontSize}px ${fontFamily}`;
+                return ctx.measureText(text).width;
+            }
+
+            function wrapText(text, maxWidth, maxHeight, fontSize) {
+                if (!text || maxWidth <= 0 || maxHeight <= 0) return [];
+
+                const words = text.split(/\s+/);
+                const lines = [];
+                let currentLine = '';
+                let currentY = 0;
+                const lineHeight = fontSize * 1.2;
+
+                for (let i = 0; i < words.length; i++) {
+                    const word = words[i];
+                    const testLine = currentLine + (currentLine ? ' ' : '') + word;
+                    const textWidth = measureText(testLine, fontSize);
+
+                    if (textWidth > maxWidth && currentLine !== '') {
+                        if (currentY + lineHeight <= maxHeight) {
+                            lines.push({text: currentLine, y: currentY});
+                            currentY += lineHeight;
+                            currentLine = word;
+
+                            if (measureText(word, fontSize) > maxWidth) {
+                                currentLine = breakLongWord(word, maxWidth, fontSize);
+                            }
+                        } else {
+                            break;
+                        }
+                    } else if (textWidth > maxWidth && currentLine === '') {
+                        const brokenWord = breakLongWord(word, maxWidth, fontSize);
+                        if (currentY + lineHeight <= maxHeight) {
+                            lines.push({text: brokenWord, y: currentY});
+                            currentY += lineHeight;
+                        }
+                        continue;
+                    } else {
+                        currentLine = testLine;
+                    }
+                }
+
+                if (currentLine && currentY + lineHeight <= maxHeight) {
+                    lines.push({text: currentLine, y: currentY});
+                }
+
+                return lines;
+            }
+
+            function breakLongWord(word, maxWidth, fontSize) {
+                if (measureText(word, fontSize) <= maxWidth) return word;
+
+                let broken = '';
+                for (let i = 0; i < word.length; i++) {
+                    const testChar = broken + word[i];
+                    if (measureText(testChar + '-', fontSize) > maxWidth && broken) {
+                        return broken + '-';
+                    }
+                    broken = testChar;
+                }
+                return broken;
+            }
+
+            function findOptimalFontSize(titleText, detailText, maxWidth, maxHeight) {
+                const fontSizes = [16, 14, 12, 10, 8];
+                const minDetailFontSize = 8;
+
+                for (let titleSize of fontSizes) {
+                    const titleLines = wrapText(titleText, maxWidth, maxHeight, titleSize);
+                    if (titleLines.length === 0) continue;
+
+                    const titleHeight = titleLines.length * (titleSize * 1.2);
+                    const remainingHeight = maxHeight - titleHeight - (titleSize * 0.3);
+
+                    if (remainingHeight < minDetailFontSize * 1.2) continue;
+
+                    const maxDetailSize = Math.min(titleSize - 2, 12);
+                    for (let detailSize = maxDetailSize; detailSize >= minDetailFontSize; detailSize--) {
+                        const detailLines = wrapText(detailText, maxWidth, remainingHeight, detailSize);
+                        if (detailLines.length > 0) {
+                            return {
+                                titleSize: titleSize,
+                                detailSize: detailSize,
+                                titleLines: titleLines,
+                                detailLines: detailLines,
+                                totalHeight: titleHeight + (detailLines.length * (detailSize * 1.2))
+                            };
+                        }
+                    }
+
+                    return {
+                        titleSize: titleSize,
+                        detailSize: null,
+                        titleLines: titleLines,
+                        detailLines: [],
+                        totalHeight: titleHeight
+                    };
+                }
+
+                const titleLines = wrapText(titleText, maxWidth, maxHeight, 8);
+                return {
+                    titleSize: 8,
+                    detailSize: null,
+                    titleLines: titleLines,
+                    detailLines: [],
+                    totalHeight: titleLines.length * (8 * 1.2)
+                };
+            }
+
+            const optimal = findOptimalFontSize(d.data.name, d.data.impactDetail, availableWidth, availableHeight);
+
+            const totalTextHeight = optimal.totalHeight;
+            const startY = padding + (availableHeight - totalTextHeight) / 2 + (optimal.titleSize * 0.8);
+
+            optimal.titleLines.forEach((line, index) => {
+                const lineY = startY + line.y;
+                if (lineY + optimal.titleSize * 0.2 < rectHeight - padding) {
+                    node.append("text").attr("class", "node-label tech-name").attr("x", rectWidth / 2).attr("y", lineY).attr("text-anchor", "middle").attr("dominant-baseline", "middle").style("font-size", optimal.titleSize + "px").text(line.text);
+                }
+            });
+
+            if (optimal.detailLines.length > 0 && optimal.detailSize) {
+                const titleEndY = startY + (optimal.titleLines.length * (optimal.titleSize * 1.2));
+                const detailStartY = titleEndY + (optimal.titleSize * 0.3);
+
+                optimal.detailLines.forEach((line, index) => {
+                    const lineY = detailStartY + line.y;
+                    if (lineY + optimal.detailSize * 0.2 < rectHeight - padding) {
+                        node.append("text").attr("class", "node-label impact-detail").attr("x", rectWidth / 2).attr("y", lineY).attr("text-anchor", "middle").attr("dominant-baseline", "middle").style("font-size", optimal.detailSize + "px").text(line.text);
+                    }
+                });
+            }
+        });
+        });
+    </script>
+</body>
+</html>

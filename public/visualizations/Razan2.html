@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        :root {
+            --color-bg: #050816;
+            --color-primary: #1f9cf0;
+            --color-text-main: #e5e7eb;
+            --color-border: #1f2937;
+     
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            margin: 0;
+            padding: 40px;
+            background: radial-gradient(circle at top, #111827 0, var(--color-bg) 55%);
+            color: var(--color-text-main);
+        }
+
+     
+
+        .panel {
+            background: linear-gradient(145deg,
+                    rgba(31, 41, 55, 0.9),
+                    rgba(15, 23, 42, 0.95));
+            border-radius: 16px;
+            padding: 20px 20px 18px;
+            border: 1px solid var(--color-border);
+            box-shadow:
+                0 18px 40px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        .chart-area {
+            width: 100%;
+             min-height: 520px;
+            background: radial-gradient(circle at top left,
+                    rgba(31, 156, 240, 0.25),
+                    rgba(15, 23, 42, 0.95));
+            border-radius: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            justify-content: center;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            margin-bottom: 16px;
+            position: relative;
+            overflow: visible;
+        } 
+        .panel:hover .chart-area {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 25px rgba(31, 156, 240, 0.4);
+        }
+
+    
+
+        .panel-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--color-primary);
+        }
+
+        .xAxis,
+        .yAxis {
+            font-size: 0.5rem;
+        }
+
+        .tooltip {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0;
+            background: rgba(15, 23, 42, 0.95);
+            color: var(--color-text-main);
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+            z-index: 999;
+            max-width: 240px;
+        }
+
+        .tooltip strong {
+            color: var(--color-primary);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .year-slider-wrapper {
+            margin-bottom: 12px;
+        } 
+
+        .year-slider-wrapper .track,
+        .year-slider-wrapper .track-inset {
+            stroke: #0b1120;
+            stroke-width: 6;
+            stroke-linecap: round;
+        }
+
+        .year-slider-wrapper .selection {
+            stroke: var(--color-primary);
+            stroke-width: 6;
+            stroke-linecap: round;
+        }
+
+        .year-slider-wrapper .handle {
+            fill: var(--color-primary);
+            stroke: #000;
+            stroke-width: 2;
+            filter: drop-shadow(0 0 6px rgba(45, 212, 191, 0.8));
+        }
+    </style>
+    <meta charset="utf-8">
+    <title></title>
+</head>
+
+<body>
+           <div class="panel">
+            <div class="panel-title">Money Burned on Failed Missions over Time</div>
+            <div class="chart-area">
+                <div class="year-slider-wrapper">
+                    <div id="yearSlider"></div> 
+                </div>
+                <div id="barLineChart"></div>
+            </div>
+        <div id="tooltip" class="tooltip"></div>
+
+    </div>
+
+    <script src="https://unpkg.com/d3-simple-slider"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <script>
+
+        d3.csv("/data/Global_Space_Exploration_Dataset.csv").then(function (data) {
+
+            const classifiedData = classifyMissions(data, 80)
+
+            const sliderRange = d3
+                .sliderBottom()
+                .min(2005)
+                .max(2025)
+                .width(320)
+                .tickFormat(d3.format("d"))
+                .ticks(5)
+                .step(1)
+                .default([2005, 2025])   
+                .fill("#1f9cf0")
+                .on("onchange", val => {
+                    const [minYear, maxYear] = val; 
+                    drawBarLineChart(classifiedData, minYear, maxYear)
+                });
+
+            const gRange = d3
+                .select("#yearSlider")
+                .append("svg")
+                .attr("width", 380)
+                .attr("height", 70)
+                .append("g")
+                .attr("transform", "translate(30,30)");
+
+            gRange.call(sliderRange); 
+ 
+            drawBarLineChart(classifiedData, 2005, 2025)
+
+        }).catch(function (error) {
+            console.log(error);
+        });
+
+        function classifyMissions(data, threshold) {
+            data.forEach(d => {
+                const rate = +d["Success Rate (%)"];   
+                d.status = rate >= threshold ? "Successful" : "Failed";
+            });
+            return data;
+        }
+
+        const tooltip = d3.select("#tooltip"); 
+        
+        // Bar Line 
+        // Reference: https://observablehq.com/@d3/bar-line-chart
+
+        function drawBarLineChart(data, minYear, maxYear) {
+            d3.selectAll('#barLineChart svg').remove();
+
+            var yearData = data.filter(d => d.Year >= minYear && d.Year <= maxYear)
+            console.log(d3.extent(yearData, d => d.Year))
+
+            const yearlySummary = d3.rollups(
+                yearData,
+                v => {
+                    const failed = v.filter(d => d.status === "Failed");
+                    return {
+                        year: +failed[0]?.Year || +v[0].Year,                 
+                        failedMissions: failed.length,                         
+                        failedBudget: d3.sum(failed, d => +d["Budget (in Billion $)"]) 
+                    };
+                },
+                d => +d.Year
+            ).map(([year, vals]) => ({
+                Year: year,
+                failedMissions: vals.failedMissions,
+                failedBudget: vals.failedBudget
+            })).sort((a, b) => d3.ascending(a.Year, b.Year));;
+
+            console.log(d3.extent(yearlySummary, d => d.failedMissions));
+
+
+           const margin = { top: 40, right: 40, bottom: 60, left: 50 };
+           const width = 800;
+        const height = 400;
+
+
+            const svg = d3.select("#barLineChart").append('svg')
+                .attr("preserveAspectRatio", "xMinYMin meet")
+                .attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom))
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            const x = d3
+                .scaleBand()
+                .domain(Array.from(new Set(yearData.map(d => +d.Year))).sort(d3.ascending))
+                .range([0, width])
+                .padding(0.2);
+
+            const xAxis = d3
+                .axisBottom(x);
+            svg.append("g")
+                .attr("class", "xAxis")
+                .attr("transform", `translate(0,${height})`)
+                .call(xAxis);
+
+            const yLeft = d3.scaleLinear().domain([0, d3.max(yearlySummary, d => d.failedMissions)]).range([height, 0]).nice();
+            svg.append("g")
+                .attr("class", "axis axis-left")
+                .call(d3.axisLeft(yLeft).ticks(6));
+
+            svg.append("text")
+                .attr("text-anchor", "start")
+                .attr("x", -30)
+                .attr("y", -10)
+                .attr("fill", "var(--color-text-main)")
+                .style("font-size", "10px")
+                .text("Failed Missions");
+
+            const yRight = d3.scaleLinear().domain([0, d3.max(yearlySummary, d => d.failedBudget)]).range([height, 0]).nice();
+            svg.append("g")
+                .attr("class", "axis axis-right")
+                .attr("transform", `translate(${width}, 0)`)
+                .call(d3.axisRight(yRight).ticks(6));
+
+            svg.append("text")
+                .attr("text-anchor", "end")
+                .attr("x", width + 40)
+                .attr("y", -10)
+                .attr("fill", "var(--color-text-main)")
+                .style("font-size", "10px")
+                .text("Wasted Budget (Billion USD)");
+
+            svg.append("g")
+                .selectAll(".bar-budget")
+                .data(yearlySummary)
+                .join("rect")
+                .attr("class", "bar-budget")
+                .attr("x", d => x(d.Year))
+                .attr("width", x.bandwidth())
+                .attr("y", d => yRight(d.failedBudget))
+                .attr("height", d => height - yRight(d.failedBudget))
+                .attr("fill", "#1f9cf0")
+                .attr("opacity", 0.7);
+
+            const lineFailed = d3.line()
+                .x(d => x(d.Year) + x.bandwidth() / 2)
+                .y(d => yLeft(d.failedMissions));
+
+            svg.append("path")
+                .datum(yearlySummary)
+                .attr("class", "line-failed")
+                .attr("fill", "none")
+                .attr("stroke", "#ff6b8a")
+                .attr("stroke-width", 2)
+                .attr("d", lineFailed);
+
+            svg.append("g")
+                .selectAll(".failed-point")
+                .data(yearlySummary)
+                .join("circle")
+                .attr("class", "failed-point")
+                .attr("cx", d => x(d.Year) + x.bandwidth() / 2)
+                .attr("cy", d => yLeft(d.failedMissions))
+                .attr("r", 5)
+                .attr("fill", "#ff6b8a")
+                .attr("stroke", "#0b1120")
+                .attr("stroke-width", 1)
+                .on("mouseover", function (event, d) {
+                    d3.select(this).attr("r", 7);
+                    tooltip
+                        .style("opacity", 1)
+                        .html(`<strong>Year: ${d.Year}</strong>
+                                Failed missions: ${d.failedMissions}<br>
+                                Wasted budget: $${d.failedBudget.toFixed(2)}B`);
+                })
+                .on("mousemove", function (event) {
+                    tooltip
+                        .style("left", (event.pageX + 15) + "px")
+                        .style("top", (event.pageY + 15) + "px");
+                })
+                .on("mouseleave", function () {
+                    d3.select(this).attr("r", 4);
+                    tooltip.style("opacity", 0);
+                });
+
+        }
+
+    </script>
+</body>
+
+</html>

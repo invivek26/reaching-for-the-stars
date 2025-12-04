@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>The Debris Prison — Global Space CSV (decluttered)</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  :root{
+    --bg1:#0a0f18; --bg2:#0b1220; --ink:#e6f0ff; --muted:#8ea1bf;
+    --panel: rgba(12,18,30,.55); --border: rgba(255,255,255,.08);
+    --barbg:rgba(255,255,255,.09); --barfill1:#00d4ff; --barfill2:#5c8aff;
+  }
+  *{box-sizing:border-box} html,body{height:100%}
+  body{margin:0; font-family: ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial;
+       color:var(--ink);
+       background: radial-gradient(1200px 900px at 70% 40%, #0c1830 0%, var(--bg2) 55%, var(--bg1) 100%);
+       overflow:hidden;}
+  #container{position:fixed; inset:0; z-index:0}
+
+  /* Top progress bar */
+  #top-progress{position:fixed; top:10px; left:16px; right:16px; height:6px; z-index:3;
+    background:var(--barbg); border-radius:999px; overflow:hidden; border:1px solid rgba(255,255,255,.06)}
+  #top-progress .fill{height:100%; width:0%;
+    background:linear-gradient(90deg,var(--barfill1),var(--barfill2)); box-shadow:0 0 12px rgba(92,138,255,.45)}
+
+  /* Info HUD */
+  #info{
+    position:fixed; top:24px; left:18px; z-index:2;
+    background:var(--panel); border:1px solid var(--border);
+    backdrop-filter:saturate(1.1) blur(8px);
+    padding:14px 16px; width:320px; border-radius:12px;
+  }
+  #info h1{margin:0 0 6px; font-size:22px; color:#fff}
+  .stat{margin:8px 0; font-size:14px; color:#fff}
+  .stat b{font-weight:700}
+
+  #year-display{
+    position:fixed; right:32px; top:50%; transform:translateY(-50%);
+    font-weight:800; font-size:120px; letter-spacing:2px;
+    color:rgba(200,220,255,.05); z-index:1; user-select:none
+  }
+
+  /* Controls */
+  #controls{position:fixed; bottom:22px; left:50%; transform:translateX(-50%); z-index:2; display:flex; gap:10px}
+  button{background:rgba(255,255,255,.06); border:1px solid var(--border);
+    color:var(--ink); padding:10px 18px; font-weight:600; border-radius:12px; cursor:pointer;
+    transition:.2s ease box-shadow,.2s ease transform;}
+  button:hover{box-shadow:0 8px 24px rgba(0,0,0,.35)} button:active{transform:translateY(1px)}
+
+  /* Legend */
+  .legend{position:fixed; left:0; right:0; bottom:64px; z-index:2; display:flex; justify-content:center; gap:18px; color:var(--muted); font-size:13px; pointer-events:none;}
+  .legend-item{display:inline-flex; align-items:center; gap:8px}
+  .legend-dot{width:10px; height:10px; border-radius:50%; box-shadow:0 0 0 1px rgba(255,255,255,.12)}
+  .dot-failed{background:#b96596}
+  .dot-collision{background:#b9993a}
+  .dot-operational{background:#30b18b}
+</style>
+</head>
+<body>
+  <div id="container"></div>
+  <div id="top-progress"><div class="fill" id="topProgressFill"></div></div>
+
+  <div id="info">
+    <h1>The Debris Prison</h1>
+    <div class="stat" id="stat-tracked">Tracked Objects: <b id="debris-count">0</b></div>
+    <div class="stat" id="stat-failed">Failed Missions: <b id="failed-count">0</b></div>
+    <div class="stat" id="stat-spent">Money Spent: <b>$<span id="spent-amount">0</span>B</b></div>
+    <div class="stat" id="stat-waste">Money Wasted: <b>$<span id="waste-amount">0</span>B</b></div>
+    <div class="stat" id="stat-risk">Collision Risk: <b id="risk-level">LOW</b></div>
+  </div>
+
+  <div id="year-display">2000</div>
+
+  <div id="controls">
+    <button id="play-btn">Play</button>
+    <button id="reset-btn">Reset</button>
+  </div>
+
+  <div class="legend" id="legend">
+    <div class="legend-item" id="legend-failed"><span class="legend-dot dot-failed"></span> Failed mission debris</div>
+    <div class="legend-item" id="legend-collision"><span class="legend-dot dot-collision"></span> Collision shards</div>
+    <div class="legend-item" id="legend-operational"><span class="legend-dot dot-operational"></span> Operational objects</div>
+  </div>
+
+<script>
+/* ============ CONFIG (single dataset) ============ */
+const CSV_FILE = '/data/Global_Space_Exploration_Dataset.csv';
+
+/* Decluttered spawn tuning */
+const FAILED_DEBRIS_MULTIPLIER  = 3;    // was 6
+const SUCCESS_DEBRIS_MULTIPLIER = 0.5;  // probabilistic (see below)
+const COLLISION_BASE_RATE       = 0.18; // was 0.25
+const COLLISION_CLUSTER_MIN     = 8;    // smaller clusters
+const COLLISION_CLUSTER_MAX     = 18;
+
+const OP_SIZE = 0.10, FAIL_SIZE = 0.13, COL_SIZE = 0.09;
+
+const START_YEAR = 2000, END_YEAR = 2025;
+
+/* ============ STATE ============ */
+let scene, camera, renderer, earth, rimGlow, stars;
+let debris = [];
+let currentYear = START_YEAR;
+let isPlaying = false;
+let totalDebris = 0, failedMissions = 0, wastedMoney = 0, spentMoney = 0;
+
+const clock = new THREE.Clock();
+let acc = 0;
+const YEAR_STEP_S = 0.45;
+
+/* Hard cap + spacing control */
+const MAX_DEBRIS_HARD = 1800;              // was 4000
+const MIN_DIST = 0.25;                      // minimum separation between points
+const SPACING_SAMPLE = 600;                 // compare against last N points for speed
+const DPR = Math.min(1.75, window.devicePixelRatio || 1);
+
+let spaceData = []; // {year, failed, cost_b}
+
+/* ============ HELPERS ============ */
+const P = [d3.utcParse('%Y-%m-%d'), d3.utcParse('%m/%d/%Y'), d3.utcParse('%d-%m-%Y'), d3.utcParse('%Y/%m/%d'), d3.utcParse('%Y')];
+function parseDateFlex(s){ if(!s) return null; const t=String(s).trim(); for(const f of P){ const d=f(t); if(d) return d; } const d=new Date(t); return isNaN(+d)?null:d; }
+function findHeader(headers, patterns){
+  const H = headers.map(h=>[h, h.toLowerCase()]);
+  for(const pat of patterns){
+    for(const [orig,low] of H){
+      if(pat instanceof RegExp ? pat.test(low) : (low===String(pat).toLowerCase())) return orig;
+    }
+  }
+  return null;
+}
+const FAIL_WORDS = ['failed','failure','partial failure','lost','explosion','explode','anomaly','aborted','abort','terminated','terminate','destroyed','destruct'];
+function looksFailed(status, successVal){
+  if(successVal!=null){
+    const s = String(successVal).trim().toLowerCase();
+    if(['false','0','no','failed','failure'].includes(s)) return true;
+    if(['true','1','yes','success','successful'].includes(s)) return false;
+  }
+  const s = String(status||'').toLowerCase();
+  return FAIL_WORDS.some(w => s.includes(w));
+}
+function parseMoneyToBillions(raw, header=''){
+  if(raw==null || raw==='') return 0;
+  let s = String(raw).trim().toUpperCase();
+  s = s.replace(/[€$]/g,'').replace(/,/g,'').replace(/\s/g,'');
+  if(/\d\.\d{3}\./.test(s)) s = s.replace(/\./g,'');
+  const suf = s.match(/(K|M|B)$/); let mult = 1;
+  if(suf){ mult={K:1e3,M:1e6,B:1e9}[suf[1]]; s=s.replace(/(K|M|B)$/,''); }
+  let val = parseFloat(s); if(isNaN(val)) return 0;
+  const h = header.toLowerCase();
+  if(/million/.test(h) && mult===1) val *= 1e6;
+  if(/billion/.test(h) && mult===1) val *= 1e9;
+  const usd = val*mult;
+  return usd>1e6 ? usd/1e9 : val; // billions
+}
+
+/* ============ LOAD CSV (ONLY THIS FILE) ============ */
+async function loadCsv(){
+  const resp = await fetch(CSV_FILE,{cache:'no-store'});
+  if(!resp.ok) throw new Error('Could not fetch ' + CSV_FILE);
+  const text = await resp.text();
+  if(!text || !text.trim()) throw new Error('Empty ' + CSV_FILE);
+  const rows = d3.csvParse(text);
+  const headers = Object.keys(rows[0]||{});
+
+  const dateCol    = findHeader(headers, [/^date$/, /datum/, /launch.*date/, /^year$/, /launch.*year/]);
+  const statusCol  = findHeader(headers, [/status/, /outcome/, /result/]);
+  const successCol = findHeader(headers, [/^success$/, /mission.*success/]);
+  const costCol    = findHeader(headers, [/^cost$/, /mission.*cost/, /budget/, /fund/, /funding/]);
+
+  spaceData = rows.map(r=>{
+    let date;
+    if(dateCol){
+      const raw = r[dateCol];
+      const d = parseDateFlex(raw);
+      if(d) date = d;
+      else if(String(raw).match(/^\d{4}$/)) date = parseDateFlex(`${raw}-07-01`);
+    }else if(r.Year || r.year || r['Launch Year']){
+      const y = r.Year||r.year||r['Launch Year'];
+      if(String(y).match(/^\d{4}$/)) date = parseDateFlex(`${y}-07-01`);
+    }
+
+    const status = statusCol ? r[statusCol] : undefined;
+    const successVal = successCol ? r[successCol] : undefined;
+    const failed = looksFailed(status, successVal);
+
+    let cost_b = 0;
+    if(costCol) cost_b = parseMoneyToBillions(r[costCol], costCol);
+
+    return { date, year: date? date.getUTCFullYear():NaN, failed, cost_b: +cost_b || 0 };
+  })
+  .filter(d=>d.date && !isNaN(d.year))
+  .sort((a,b)=>a.date-b.date);
+}
+
+/* ============ 3D SCENE ============ */
+function init(){
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 1000);
+  camera.position.set(0,0,20);
+
+  renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+  renderer.setPixelRatio(DPR);
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.setClearAlpha(0);
+  document.getElementById('container').appendChild(renderer.domElement);
+
+  scene.add(new THREE.HemisphereLight(0x88a7ff, 0x0b0f16, 0.75));
+  const key = new THREE.DirectionalLight(0xffffff, 1.0); key.position.set(10,8,12); scene.add(key);
+  const fill = new THREE.DirectionalLight(0x3aa0ff, 0.55); fill.position.set(-8,-6,10); scene.add(fill);
+
+  const geo = new THREE.SphereGeometry(6,64,64);
+  const mat = new THREE.MeshLambertMaterial({ color:0x103454, emissive:0x0a1f3a, emissiveIntensity:0.15 });
+  earth = new THREE.Mesh(geo,mat); scene.add(earth);
+
+  const rimGeo = new THREE.SphereGeometry(6.2,64,64);
+  const rimMat = new THREE.ShaderMaterial({
+    transparent:true, blending:THREE.AdditiveBlending, depthWrite:false,
+    uniforms:{ color:{value:new THREE.Color(0x2dd6ff)} },
+    vertexShader:`varying vec3 vN; varying vec3 vW; void main(){ vN=normalize(normalMatrix*normal); vec4 wp=modelMatrix*vec4(position,1.0); vW=wp.xyz; gl_Position=projectionMatrix*viewMatrix*wp; }`,
+    fragmentShader:`uniform vec3 color; varying vec3 vN; varying vec3 vW; void main(){ vec3 V=normalize(cameraPosition - vW); float f=pow(1.0 - max(dot(normalize(vN),V),0.0), 3.0); gl_FragColor=vec4(color, f*0.55); }`
+  });
+  rimGlow = new THREE.Mesh(rimGeo, rimMat); scene.add(rimGlow);
+
+  const g=new THREE.BufferGeometry(); const v=[];
+  for(let i=0;i<1200;i++) v.push((Math.random()-0.5)*420,(Math.random()-0.5)*420,(Math.random()-0.5)*420);
+  g.setAttribute('position', new THREE.Float32BufferAttribute(v,3));
+  const m=new THREE.PointsMaterial({ color:0x7f92d6, size:0.35, transparent:true, opacity:0.22 });
+  stars=new THREE.Points(g,m); scene.add(stars);
+
+  clock.start(); animate();
+}
+
+/* simple Poisson-like placement: avoid clustering too close */
+const recentPositions = [];
+function tryPlace(radius, phi, theta){
+  const x = radius * Math.sin(phi) * Math.cos(theta);
+  const y = radius * Math.sin(phi) * Math.sin(theta);
+  const z = radius * Math.cos(phi);
+  // check distance to last N points
+  for(let i=Math.max(0, recentPositions.length - SPACING_SAMPLE); i<recentPositions.length; i++){
+    const p = recentPositions[i]; const dx=x-p[0], dy=y-p[1], dz=z-p[2];
+    if(dx*dx+dy*dy+dz*dz < MIN_DIST*MIN_DIST) return null;
+  }
+  recentPositions.push([x,y,z]); if(recentPositions.length>5000) recentPositions.shift();
+  return new THREE.Vector3(x,y,z);
+}
+
+function addDebris(type, count=1){
+  for(let i=0;i<count;i++){
+    if(debris.length>=MAX_DEBRIS_HARD) break;
+    let color,size; if(type==='failed'){color=0xb96596;size=FAIL_SIZE;}
+    else if(type==='collision'){color=0xb9993a;size=COL_SIZE;} else {color=0x30b18b;size=OP_SIZE;}
+    const geo=new THREE.SphereGeometry(size,10,10);
+    const mat=new THREE.MeshLambertMaterial({color});
+    const s=new THREE.Mesh(geo,mat);
+
+    // orbit shell
+    const rBand=Math.random(); let alt;
+    if(rBand<0.75) alt=0.9+Math.random()*1.6; else if(rBand<0.92) alt=3+Math.random()*2; else alt=5+Math.random()*3;
+    const radius=6+alt;
+
+    // spaced placement attempts
+    let pos=null, attempts=0;
+    while(!pos && attempts<12){
+      const theta=Math.random()*Math.PI*2; const phi=Math.acos(Math.random()*2-1);
+      pos = tryPlace(radius, phi, theta);
+      if(pos){ s.userData={type, speed:0.003/(alt+1), angle:theta, phi, radius}; }
+      attempts++;
+    }
+    if(!pos) continue; // give up if too packed
+
+    s.position.copy(pos);
+    scene.add(s); debris.push(s);
+  }
+}
+
+function animate(){
+  const dt=clock.getDelta(); acc+=dt;
+  earth.rotation.y+=0.00055; rimGlow.rotation.copy(earth.rotation);
+  if(stars) stars.rotation.y-=0.0001;
+  debris.forEach(d=>{ d.userData.angle+=d.userData.speed;
+    d.position.x=d.userData.radius*Math.sin(d.userData.phi)*Math.cos(d.userData.angle);
+    d.position.y=d.userData.radius*Math.sin(d.userData.phi)*Math.sin(d.userData.angle);
+    d.position.z=d.userData.radius*Math.cos(d.userData.phi); });
+  if(isPlaying){
+    while(acc>=YEAR_STEP_S){
+      acc-=YEAR_STEP_S;
+      if(currentYear<END_YEAR){ currentYear++; updateYear(); }
+      else { isPlaying=false; document.getElementById('play-btn').textContent='Done'; break; }
+    }
+  }
+  renderer.render(scene,camera); requestAnimationFrame(animate);
+}
+
+/* ============ HUD visibility & legend ============ */
+function setRowVisible(id, visible){
+  const el = document.getElementById(id);
+  if(el) el.style.display = visible ? '' : 'none';
+}
+function updateHudVisibility(){
+  setRowVisible('stat-failed', failedMissions > 0);
+  setRowVisible('stat-spent',  spentMoney   > 0.00001);
+  setRowVisible('stat-waste',  wastedMoney  > 0.00001);
+}
+function updateLegendVisibility(){
+  const lf = document.getElementById('legend-failed');
+  if(lf) lf.style.display = (failedMissions > 0) ? '' : 'none';
+}
+
+/* ============ PER-YEAR UPDATE ============ */
+function updateYear(){
+  document.getElementById('year-display').textContent=currentYear;
+
+  const yearRows = spaceData.filter(d=>d.year===currentYear);
+  yearRows.forEach(d=>{
+    spentMoney += d.cost_b;
+
+    // declutter: probabilistic operational debris
+    if(d.failed){
+      addDebris('failed',FAILED_DEBRIS_MULTIPLIER);
+      failedMissions++;
+      wastedMoney += d.cost_b;
+      totalDebris += FAILED_DEBRIS_MULTIPLIER;
+    } else {
+      if(Math.random() < SUCCESS_DEBRIS_MULTIPLIER){ addDebris('operational',1); totalDebris += 1; }
+    }
+  });
+
+  const t=(currentYear-START_YEAR)/(END_YEAR-START_YEAR);
+  if(Math.random() < (COLLISION_BASE_RATE * t)){
+    const n = Math.floor(COLLISION_CLUSTER_MIN + Math.random()*(COLLISION_CLUSTER_MAX-COLLISION_CLUSTER_MIN+1));
+    addDebris('collision',n); totalDebris += n;
+  }
+
+  document.getElementById('debris-count').textContent = totalDebris.toLocaleString();
+  if(failedMissions>0) document.getElementById('failed-count').textContent = failedMissions;
+  if(spentMoney>0)     document.getElementById('spent-amount').textContent = spentMoney.toFixed(1);
+  if(wastedMoney>0)    document.getElementById('waste-amount').textContent = wastedMoney.toFixed(1);
+
+  const risk = totalDebris<300?'LOW':(totalDebris<1100?'MEDIUM':'HIGH');
+  document.getElementById('risk-level').textContent = risk;
+
+  document.getElementById('topProgressFill').style.width =
+    ((currentYear-START_YEAR)/(END_YEAR-START_YEAR)*100) + '%';
+
+  updateHudVisibility();
+  updateLegendVisibility();
+}
+
+/* ============ CONTROLS ============ */
+const playBtn = document.getElementById('play-btn');
+playBtn.addEventListener('click', ()=>{ isPlaying=!isPlaying; playBtn.textContent = isPlaying?'Pause':'Play'; });
+document.getElementById('reset-btn').addEventListener('click', ()=>{
+  isPlaying=false; playBtn.textContent='Play'; acc=0;
+  currentYear=START_YEAR; totalDebris=0; failedMissions=0; wastedMoney=0; spentMoney=0;
+  debris.forEach(d=>scene.remove(d)); debris=[];
+  recentPositions.length = 0;
+  document.getElementById('year-display').textContent=String(START_YEAR);
+  document.getElementById('debris-count').textContent='0';
+  document.getElementById('failed-count').textContent='0';
+  document.getElementById('spent-amount').textContent='0';
+  document.getElementById('waste-amount').textContent='0';
+  document.getElementById('risk-level').textContent='LOW';
+  document.getElementById('topProgressFill').style.width='0%';
+  updateHudVisibility();
+  updateLegendVisibility();
+});
+
+/* ============ BOOT ============ */
+addEventListener('resize', ()=>{ camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
+
+(async function(){
+  try{
+    await loadCsv();        // only Global_Space_Exploration_Dataset.csv
+    init();
+    updateHudVisibility();  // hide zero rows at start
+    updateLegendVisibility();
+    isPlaying = true; playBtn.textContent='Pause';
+  }catch(err){
+    alert(err.message); console.error(err);
+  }
+})();
+</script>
+</body>
+</html>

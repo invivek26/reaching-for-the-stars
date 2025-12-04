@@ -2,8 +2,6 @@ import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
-import Header from '../components/Header'
-
 import ConvexProvider from '../integrations/convex/provider'
 
 import appCss from '../styles.css?url'
@@ -19,13 +17,22 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Reaching for the Stars - Space Exploration Data Story',
+      },
+      {
+        name: 'description',
+        content: 'An interactive data visualization exploring the two sides of space exploration: wonder and promise vs costs and challenges.',
       },
     ],
     links: [
       {
         rel: 'stylesheet',
         href: appCss,
+      },
+      {
+        rel: 'icon',
+        type: 'image/svg+xml',
+        href: '/favico.gif',
       },
     ],
   }),
@@ -39,9 +46,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body className="bg-black text-[var(--text-main)] antialiased overflow-x-hidden">
         <ConvexProvider>
-          <Header />
           {children}
           <TanStackDevtools
             config={{

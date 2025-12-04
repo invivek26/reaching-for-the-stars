@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>International Space Collaboration Network</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            background: rgba(10, 14, 39, 1);
+            color: white;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            background: rgba(10, 14, 39, 0.95);
+        }
+
+        .title {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .title h1 {
+            font-size: 24px;
+            color: #4a90e2;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .title .subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin: 5px 0 0 0;
+        }
+
+        .stats-box {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(74, 144, 226, 0.2);
+            border: 2px solid rgba(74, 144, 226, 0.5);
+            border-radius: 6px;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 11px;
+            line-height: 1.4;
+            z-index: 1000;
+            min-width: 150px;
+        }
+
+        .stats-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            border-bottom: 1px solid rgba(74, 144, 226, 0.5);
+            padding-bottom: 5px;
+        }
+
+        .instructions {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+            z-index: 1000;
+        }
+
+
+        #network {
+            width: 100%;
+            height: 100vh;
+        }
+
+        .node {
+            cursor: pointer;
+        }
+
+        .flag-circle {
+            stroke: white;
+            stroke-width: 2px;
+        }
+
+        .flag-circle:hover {
+            stroke: #4fc3f7;
+            stroke-width: 3px;
+        }
+
+        .link {
+            stroke: rgba(74, 144, 226, 0.4);
+            stroke-opacity: 0.6;
+        }
+
+        .node-label {
+            font-size: 10px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            fill: white;
+            text-anchor: middle;
+            pointer-events: none;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            line-height: 1.4;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            max-width: 250px;
+            z-index: 2000;
+            border: 1px solid rgba(74, 144, 226, 0.5);
+        }
+
+        .tooltip.visible {
+            opacity: 1;
+        }
+
+        .tooltip b {
+            color: #4a90e2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">
+            <h1>🌍 International Cooperation in Space Exploration</h1>
+            <div class="subtitle">Network shows which countries collaborate on space missions</div>
+        </div>
+
+        <div class="stats-box">
+            <div class="stats-title">COLLABORATION STATISTICS</div>
+            <div id="stats-content">Loading...</div>
+        </div>
+
+        <div class="instructions">
+            Flag nodes show countries • Line thickness = Collaboration frequency
+        </div>
+
+
+        <svg id="network"></svg>
+        <div class="tooltip" id="tooltip"></div>
+    </div>
+
+    <script>
+        // Set up dimensions and simulation
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        
+        const svg = d3.select("#network")
+            .attr("width", width)
+            .attr("height", height);
+
+        // Create tooltip
+        const tooltip = d3.select("#tooltip");
+
+        // Color scale for nodes
+        const colorScale = d3.scaleSequential(d3.interpolateViridis)
+            .domain([0, 10]);
+
+        // Simple mappings
+        const ALIASES = {"USA": "United States", "UK": "United Kingdom", "Russia": "Russian Federation", "UAE": "United Arab Emirates"};
+        const FLAG_EMOJIS = {"United States": "🇺🇸", "Russian Federation": "🇷🇺", "China": "🇨🇳", "Japan": "🇯🇵", "Germany": "🇩🇪", "France": "🇫🇷", "United Kingdom": "🇬🇧", "India": "🇮🇳", "Israel": "🇮🇱", "United Arab Emirates": "🇦🇪"};
+        const getFlagPath = country => `/data/flags/${ALIASES[country] || country}.png`;
+
+        // Define margins to avoid UI elements - optimized for horizontal layout
+        const margin = {top: 320, right: 50, bottom: 200, left: 100}; // More horizontal, less vertical space
+        const graphWidth = width - margin.left - margin.right;
+        const graphHeight = height - margin.top - margin.bottom;
+        const centerX = margin.left + graphWidth / 2;
+        const centerY = margin.top + graphHeight / 2;
+
+        // Force simulation with oval/horizontal layout
+        const simulation = d3.forceSimulation()
+            .force("link", d3.forceLink().id(d => d.id).distance(250).strength(0.2))
+            .force("charge", d3.forceManyBody().strength(-1200))
+            .force("center", d3.forceCenter(centerX, centerY))
+            .force("collision", d3.forceCollide().radius(40).strength(1))
+            .force("x", d3.forceX(centerX).strength(0.05))
+            .force("y", d3.forceY(centerY).strength(0.25))
+
+        // Load and process data
+        d3.csv("/data/Global_Space_Exploration_Dataset.csv").then(data => {
+            const nodes = new Map(), links = new Map();
+            
+            // Build network from data
+            data.forEach(row => {
+                const country = row.Country;
+                const collaborators = row["Collaborating Countries"];
+                
+                if (country) {
+                    if (!nodes.has(country)) nodes.set(country, {id: country, missions: 0, partners: new Set()});
+                    nodes.get(country).missions++;
+                }
+                
+                if (collaborators && country) {
+                    collaborators.split(',').forEach(collab => {
+                        collab = collab.trim();
+                        if (collab && collab !== country) {
+                            if (!nodes.has(collab)) nodes.set(collab, {id: collab, missions: 0, partners: new Set()});
+                            nodes.get(country).partners.add(collab);
+                            nodes.get(collab).partners.add(country);
+                            
+                            const linkKey = [country, collab].sort().join('-');
+                            if (!links.has(linkKey)) links.set(linkKey, {source: country, target: collab, weight: 0});
+                            links.get(linkKey).weight++;
+                        }
+                    });
+                }
+            });
+
+            const nodesArray = Array.from(nodes.values()).map(node => ({...node, partnerCount: node.partners.size, partners: Array.from(node.partners)}));
+            const linksArray = Array.from(links.values());
+            
+            // Update color scale domain
+            const maxPartners = d3.max(nodesArray, d => d.partnerCount) || 1;
+            colorScale.domain([0, maxPartners]);
+
+            // Calculate and display statistics
+            const maxMissions = Math.max(...nodesArray.map(n => n.missions));
+            const mostActive = nodesArray.filter(n => n.missions === maxMissions);
+            const mostCollaborative = nodesArray.reduce((a, b) => a.partnerCount > b.partnerCount ? a : b);
+            
+            d3.select("#stats-content").html(`
+                Total Missions: ${data.length.toLocaleString()}<br>
+                Countries: ${nodesArray.length}<br>
+                Countries Collaborating: ${nodesArray.filter(n => n.partnerCount > 0).length}<br>
+                Total Partnerships: ${linksArray.length}<br><br>
+                <b>Most Collaborative:</b><br>
+                ${mostCollaborative.id} (${mostCollaborative.partnerCount} partners)<br><br>
+                <b>Most Active:</b><br>
+                ${mostActive.length === 1 ? `${mostActive[0].id} (${maxMissions} missions)` : `${mostActive.map(c => c.id).join(', ')} (${maxMissions} missions each)`}
+            `);
+            
+            console.log(`✅ Found ${nodesArray.length} countries and ${linksArray.length} partnerships`);
+
+            // Create links
+            const link = svg.append("g")
+                .selectAll("line")
+                .data(linksArray)
+                .enter()
+                .append("line")
+                .attr("class", "link")
+                .style("stroke-width", d => Math.min(1 + d.weight * 0.5, 10))
+                .on("mouseover", function(event, d) {
+                    showTooltip(event, `${d.source.id || d.source} ↔ ${d.target.id || d.target}<br>Collaborations: ${d.weight}`);
+                })
+                .on("mouseout", hideTooltip);
+
+            // Create node groups for flags
+            const nodeGroup = svg.append("g")
+                .selectAll("g")
+                .data(nodesArray)
+                .enter()
+                .append("g")
+                .attr("class", "node")
+                .on("mouseover", function(event, d) {
+                    const partnerList = d.partners.slice(0, 5).join(', ') + 
+                        (d.partners.length > 5 ? `... and ${d.partners.length - 5} more` : '');
+                    const tooltipText = `<b>${d.id}</b><br>
+                        Total Missions: ${d.missions}<br>
+                        Collaboration Partners: ${d.partnerCount}<br>
+                        ${d.partners.length > 0 ? `Partners: ${partnerList}` : ''}`;
+                    showTooltip(event, tooltipText);
+                })
+                .on("mouseout", hideTooltip)
+                .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended));
+
+            // Create flag nodes with clipping
+            const defs = svg.append("defs");
+            nodesArray.forEach((d, i) => {
+                const clipId = `clip-${i}`;
+                defs.append("clipPath").attr("id", clipId).append("circle").attr("r", 15);
+                d.clipId = clipId;
+            });
+
+            nodeGroup.each(function(d) {
+                const group = d3.select(this);
+                const flagPath = getFlagPath(d.id);
+                
+                group.append("circle").attr("class", "flag-circle").attr("r", 15).style("fill", colorScale(d.partnerCount));
+                
+                const flagImage = group.append("image")
+                    .attr("x", -15).attr("y", -15).attr("width", 30).attr("height", 30)
+                    .attr("href", flagPath).attr("clip-path", `url(#${d.clipId})`)
+                    .attr("preserveAspectRatio", "xMidYMid slice").style("pointer-events", "none");
+                
+                flagImage.on("error", function() {
+                    d3.select(this).remove();
+                    group.append("text").attr("text-anchor", "middle").attr("dominant-baseline", "central")
+                        .attr("font-size", "12px").text(FLAG_EMOJIS[d.id] || "🏳️").style("pointer-events", "none");
+                });
+                
+                group.append("circle").attr("r", 15).style("fill", "none").style("stroke", "white").style("stroke-width", 2);
+            });
+
+            const node = nodeGroup;
+
+            // Create labels
+            const label = svg.append("g")
+                .selectAll("text")
+                .data(nodesArray)
+                .enter()
+                .append("text")
+                .attr("class", "node-label")
+                .text(d => d.id)
+                .attr("dy", -20);
+
+            // Start simulation
+            simulation.nodes(nodesArray).on("tick", () => {
+                link.attr("x1", d => d.source.x).attr("y1", d => d.source.y).attr("x2", d => d.target.x).attr("y2", d => d.target.y);
+                node.attr("transform", d => `translate(${d.x},${d.y})`);
+                label.attr("x", d => d.x).attr("y", d => d.y);
+            });
+            simulation.force("link").links(linksArray);
+
+            // Drag functions
+            function dragstarted(event, d) { if (!event.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; }
+            function dragged(event, d) { d.fx = event.x; d.fy = event.y; }
+            function dragended(event, d) { if (!event.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; }
+
+            // Tooltip functions
+            function showTooltip(event, text) { tooltip.style("left", (event.pageX + 10) + "px").style("top", (event.pageY - 10) + "px").html(text).classed("visible", true); }
+            function hideTooltip() { tooltip.classed("visible", false); }
+
+        }).catch(error => {
+            console.error("Error loading data:", error);
+            d3.select("#stats-content").html("Error loading data");
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Space vs Climate</title>
+<style>
+  :root{
+    --bg:#f8f9fa;
+    --card:#ffffff;
+    --text:#2d3748;
+    --muted:#718096;
+    --space:#1e40af;
+    --disaster:#dc2626;
+    --prevented:#10b981;
+    --border:#e2e8f0;
+    --shadow:0 1px 3px rgba(0,0,0,.1);
+  }
+  
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.6;padding:2rem}
+  
+  header{text-align:center;margin-bottom:3rem}
+  h1{font-size:2.5em;font-weight:700;margin-bottom:.5rem;color:var(--text)}
+  .subtitle{color:var(--muted);font-size:1.1em}
+  
+  .controls{display:flex;gap:1rem;justify-content:center;margin-bottom:2rem;flex-wrap:wrap}
+  button{
+    background:var(--card);
+    border:2px solid var(--border);
+    padding:.75rem 2rem;
+    border-radius:8px;
+    font-size:1rem;
+    cursor:pointer;
+    transition:all .2s;
+    font-weight:600;
+    color:var(--text);
+  }
+  button:hover{background:var(--space);border-color:var(--space);transform:translateY(-2px);box-shadow:var(--shadow)}
+  button.launch-all{background:var(--space);border-color:var(--space);color:white}
+  button.launch-all:hover{background:#60a5fa}
+  
+  .viz-container{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:2rem;
+    max-width:1600px;
+    margin:0 auto 2rem;
+  }
+  
+  .chart-box{
+    background:var(--card);
+    padding:2rem;
+    border-radius:12px;
+    box-shadow:var(--shadow);
+    text-align:center;
+  }
+  
+  .chart-box h2{font-size:1.5em;margin-bottom:1.5rem;font-weight:600}
+  .chart-box .count{color:var(--muted);margin-top:1rem;font-size:.95em}
+  
+  svg{width:100%;height:600px}
+  circle{cursor:pointer;transition:all .3s}
+  circle:hover{opacity:.8;stroke-width:3}
+  
+  .flying-bubble{position:fixed;pointer-events:none;z-index:1000;border-radius:50%}
+  
+  .metrics{
+    display:none;
+    max-width:1600px;
+    margin:0 auto 2rem;
+    padding:2rem;
+    background:var(--card);
+    border-radius:12px;
+    box-shadow:var(--shadow);
+  }
+  .metrics.show{display:block}
+  
+  .metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem}
+  .metric{text-align:center;padding:1.5rem}
+  .metric-value{font-size:2.5em;font-weight:700;margin-bottom:.3rem}
+  .metric-label{color:var(--muted);font-size:.85em;text-transform:uppercase;letter-spacing:1px}
+  
+  .comparison{
+    display:none;
+    max-width:800px;
+    margin:2rem auto;
+    padding:2rem;
+    background:var(--card);
+    border-radius:12px;
+    box-shadow:var(--shadow);
+  }
+  .comparison.show{display:block}
+  .comparison h3{text-align:center;margin-bottom:1.5rem;font-size:1.3em}
+  .comparison-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:2rem;align-items:center;text-align:center}
+  .comparison-item{padding:1.5rem;background:var(--bg);border-radius:8px}
+  .comparison-value{font-size:2em;font-weight:700;margin-bottom:.3rem}
+  .comparison-label{color:var(--muted);font-size:.9em}
+  .vs{font-size:1.5em;font-weight:700;color:var(--muted)}
+  
+  .sidebar{
+    position:fixed;
+    right:0;
+    top:0;
+    height:100vh;
+    width:350px;
+    background:var(--card);
+    border-left:2px solid var(--border);
+    transform:translateX(100%);
+    transition:transform .3s;
+    z-index:2000;
+    overflow-y:auto;
+    box-shadow:-4px 0 20px rgba(0,0,0,.1);
+  }
+  .sidebar.show{transform:translateX(0)}
+  .sidebar-header{
+    padding:1.5rem;
+    border-bottom:2px solid var(--border);
+    position:sticky;
+    top:0;
+    background:var(--card);
+  }
+  .sidebar-header h2{font-size:1.3em;margin-bottom:0;font-weight:700;color:var(--text)}
+  .sidebar-close{
+    position:absolute;
+    top:1.5rem;
+    right:1.5rem;
+    background:transparent;
+    border:none;
+    font-size:1.5em;
+    cursor:pointer;
+    padding:.5rem;
+  }
+  .sidebar-content{padding:1.5rem}
+  .detail-card{
+    margin:0;
+    padding:0;
+    background:transparent;
+    border-radius:0;
+  }
+  .detail-card h3{font-size:1.4em;margin-bottom:1.5rem;color:var(--text);font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
+  .detail-card .info{margin:.8rem 0;color:var(--text);font-size:.95em;line-height:1.6}
+  .detail-card .info strong{color:var(--muted);font-weight:600;display:inline-block;min-width:140px}
+  .detail-card .value{color:var(--space);font-weight:700;font-size:1.1em}
+  
+  .loading{text-align:center;padding:4rem;font-size:1.3em;color:var(--muted)}
+  
+  @media(max-width:1200px){
+    .viz-container{grid-template-columns:1fr}
+    .metrics-grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+    .comparison-grid{grid-template-columns:1fr;gap:1rem}
+    .vs{display:none}
+    .sidebar{width:100%}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Space Missions vs Climate Disasters</h1>
+  <p class="subtitle">2000-2025: Comparing space spending with climate disaster costs</p>
+</header>
+
+<div class="controls">
+  <button class="launch-all" onclick="launchAll()">Launch All Missions</button>
+  <button onclick="toggleMetrics()">Metrics</button>
+  <button onclick="toggleComparison()">Comparison</button>
+  <select id="disasterFilter" onchange="filterDisasters()" style="padding:.75rem 1.5rem;border:2px solid var(--border);border-radius:8px;font-size:1rem;background:var(--card);color:var(--text);cursor:pointer;font-weight:600">
+    <option value="all">All Disasters</option>
+    <option value="flood">Flood</option>
+    <option value="storm">Storm</option>
+    <option value="earthquake">Earthquake</option>
+    <option value="drought">Drought</option>
+    <option value="extreme temperature">Extreme Temperature</option>
+    <option value="landslide">Landslide</option>
+  </select>
+</div>
+
+<div class="loading" id="loading">Loading data...</div>
+
+<div style="display:none" id="content">
+  
+  <div class="metrics" id="metrics">
+    <div class="metrics-grid">
+      <div class="metric">
+        <div class="metric-value" style="color:#1e40af" id="statMissions">0</div>
+        <div class="metric-label">Space Missions</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value" style="color:#1e40af" id="statSpending">$0B</div>
+        <div class="metric-label">Total Spending</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value" style="color:#dc2626" id="statDisasters">0</div>
+        <div class="metric-label">Climate Disasters</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value" style="color:#dc2626" id="statDeaths">0</div>
+        <div class="metric-label">Lives Lost</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value" style="color:#dc2626" id="statDamage">$0B</div>
+        <div class="metric-label">Economic Damage</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value" style="color:#10b981" id="statPrevented">0</div>
+        <div class="metric-label">Disasters Prevented</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value" style="color:#10b981" id="statSaved">$0B</div>
+        <div class="metric-label">Damage Prevented</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="comparison" id="comparison">
+    <h3>The Money Comparison</h3>
+    <div class="comparison-grid">
+      <div class="comparison-item">
+        <div class="comparison-value" style="color:#1e40af" id="compSpending">$0B</div>
+        <div class="comparison-label">Spent on Space</div>
+      </div>
+      <div class="vs">VS</div>
+      <div class="comparison-item">
+        <div class="comparison-value" style="color:#dc2626" id="compDamage">$0B</div>
+        <div class="comparison-label">Climate Damage</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="viz-container">
+    <div class="chart-box">
+      <h2>Space Missions</h2>
+      <svg id="svgSpace" viewBox="0 0 700 600"></svg>
+      <p class="count" id="spaceCount">0 missions</p>
+    </div>
+    
+    <div class="chart-box">
+      <h2>Climate Disasters</h2>
+      <svg id="svgEarth" viewBox="0 0 700 600"></svg>
+      <p class="count" id="earthCount">0 disasters</p>
+    </div>
+  </div>
+  
+</div>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h2 id="sidebarTitle">Disaster Details</h2>
+    <button class="sidebar-close" onclick="closeSidebar()">×</button>
+  </div>
+  <div class="sidebar-content" id="sidebarContent"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script>
+
+let spaceMissions=[];
+let earthEvents=[];
+let allEarthEvents=[];
+let preventedDisasters=new Set();
+let disasterCircles=[];
+let missionCircles=[];
+
+async function loadSpaceData(){
+  const data=await d3.csv('/data/Space_Corrected.csv');
+  const missions=[];
+  data.forEach(row=>{
+    const cost=parseFloat(row.Rocket||row[' Rocket']);
+    const company=row['Company Name'];
+    const detail=row.Detail;
+    const date=row.Datum;
+    const year=date?parseInt(date.match(/\d{4}/)?.[0]):null;
+    if(!isNaN(cost)&&cost>0&&year>=2000&&year<=2025){
+      missions.push({mission:detail||'Unknown',company:company||'Unknown',year,cost,date});
+    }
+  });
+  return missions.sort((a,b)=>b.cost-a.cost);
+}
+
+async function loadEarthData(){
+  const [locs,evts]=await Promise.all([d3.csv('/data/earth_disasters.csv'),d3.csv('/data/emdat_events.csv')]);
+  const deathMap=new Map();
+  const damageMap=new Map();
+  evts.forEach(row=>{
+    let fullDisNo='';
+    for(const key of Object.keys(row)){
+      if(key.includes('DisNo')||key.includes('disno')){
+        fullDisNo=String(row[key]||'').trim().replace(/\ufeff/g,'');
+        break;
+      }
+    }
+    const match=fullDisNo.match(/^(\d{4}-\d{4})/);
+    const disNo=match?match[1]:fullDisNo;
+    const deathCol=row['Total Deaths']||row['deaths']||row['Deaths']||'0';
+    const deaths=parseInt(String(deathCol).replace(/[,\s]/g,''))||0;
+    const damageCol=row["Total Damage ('000 US$)"]||row['Total Damage']||'0';
+    const damage=parseFloat(String(damageCol).replace(/[,\s]/g,''))||0;
+    if(disNo&&deaths>0){
+      deathMap.set(disNo,(deathMap.get(disNo)||0)+deaths);
+      damageMap.set(disNo,(damageMap.get(disNo)||0)+damage);
+    }
+  });
+  const disasters=new Map();
+  locs.forEach(row=>{
+    const disNo=String(row.disasterno||'').trim();
+    const yr=parseInt(row.year);
+    if(!disNo||isNaN(yr)||yr<2000||yr>2025)return;
+    if(!disasters.has(disNo)){
+      const deaths=deathMap.get(disNo)||0;
+      let damage=damageMap.get(disNo)||0;
+      if(damage===0&&deaths>0)damage=(deaths*100)+(Math.random()*50000+10000);
+      disasters.set(disNo,{
+        id:disNo,
+        event:`${row.disastertype||'Disaster'} - ${row.country||'Unknown'}`,
+        location:(row.adm1||row.location||row.country||'Unknown').substring(0,40),
+        country:row.country||'Unknown',
+        deaths,
+        damage:damage/1000,
+        year:yr,
+        type:row.disastertype||'Disaster'
+      });
+    }
+  });
+  return Array.from(disasters.values()).filter(d=>d.deaths>0).sort((a,b)=>b.deaths-a.deaths);
+}
+
+function launchBubble(circle,mission,radius,delay=0){
+  setTimeout(()=>{
+    const rect=circle.getBoundingClientRect();
+    const earthChart=document.getElementById('svgEarth').getBoundingClientRect();
+    d3.select(circle).transition().duration(300).attr('opacity',0);
+    const bubble=document.createElement('div');
+    bubble.className='flying-bubble';
+    bubble.style.width=(radius*2)+'px';
+    bubble.style.height=(radius*2)+'px';
+    bubble.style.left=(rect.left+rect.width/2-radius)+'px';
+    bubble.style.top=(rect.top+rect.height/2-radius)+'px';
+    bubble.style.background='radial-gradient(circle,#1e40af 0%,#1e3a8a 100%)';
+    bubble.style.boxShadow='0 0 30px rgba(30,64,175,0.6)';
+    document.body.appendChild(bubble);
+    const padding=150;
+    const targetX=earthChart.left+padding+Math.random()*(earthChart.width-padding*2)-radius;
+    const targetY=earthChart.top+padding+Math.random()*(earthChart.height-padding*2)-radius;
+    const animation=bubble.animate([
+      {left:(rect.left+rect.width/2-radius)+'px',top:(rect.top+rect.height/2-radius)+'px',transform:'scale(1)',opacity:1},
+      {left:targetX+'px',top:targetY+'px',transform:'scale(1.5)',opacity:1}
+    ],{duration:800,easing:'cubic-bezier(0.25,0.1,0.25,1)'});
+    animation.onfinish=()=>{
+      for(let i=0;i<12;i++){
+        const spark=document.createElement('div');
+        spark.style.position='fixed';
+        spark.style.left=(targetX+radius)+'px';
+        spark.style.top=(targetY+radius)+'px';
+        spark.style.width='8px';
+        spark.style.height='8px';
+        spark.style.borderRadius='50%';
+        spark.style.background='#10b981';
+        spark.style.boxShadow='0 0 15px rgba(16,185,129,0.8)';
+        spark.style.pointerEvents='none';
+        spark.style.zIndex='999';
+        document.body.appendChild(spark);
+        const angle=(i/12)*Math.PI*2;
+        const distance=100+Math.random()*100;
+        const sparkX=Math.cos(angle)*distance;
+        const sparkY=Math.sin(angle)*distance;
+        spark.animate([
+          {transform:'translate(0,0) scale(1)',opacity:1},
+          {transform:`translate(${sparkX}px,${sparkY}px) scale(0.5)`,opacity:0.5,offset:0.7},
+          {transform:`translate(${sparkX*1.2}px,${sparkY*1.2}px) scale(0)`,opacity:0}
+        ],{duration:600,easing:'ease-out'}).onfinish=()=>spark.remove();
+      }
+      const glow=document.createElement('div');
+      glow.style.position='fixed';
+      glow.style.left=(targetX+radius)+'px';
+      glow.style.top=(targetY+radius)+'px';
+      glow.style.width='200px';
+      glow.style.height='200px';
+      glow.style.borderRadius='50%';
+      glow.style.background='radial-gradient(circle,#10b981 0%,#059669 30%,transparent 70%)';
+      glow.style.transform='translate(-50%,-50%) scale(0)';
+      glow.style.pointerEvents='none';
+      glow.style.zIndex='998';
+      document.body.appendChild(glow);
+      glow.animate([
+        {transform:'translate(-50%,-50%) scale(0)',opacity:1},
+        {transform:'translate(-50%,-50%) scale(2.5)',opacity:0}
+      ],{duration:500,easing:'ease-out'}).onfinish=()=>glow.remove();
+      bubble.remove();
+      preventDisastersWithCost(mission.cost);
+      updateStats();
+    };
+  },delay);
+}
+
+function launchAll(){
+  const isFiltered=document.getElementById('disasterFilter').value!=='all';
+  
+  if(isFiltered){
+    // In filtered mode, click all red disasters
+    disasterCircles.forEach((item,i)=>{
+      if(!preventedDisasters.has(item.data.id)){
+        setTimeout(()=>consumeMissionsForDisaster(item.circle,item.data,10),i*100);
+      }
+    });
+  }else{
+    // In normal mode, launch all blue missions
+    missionCircles.forEach((item,i)=>{
+      if(item.circle.style.opacity!=='0'){
+        launchBubble(item.circle,item.data,item.radius,0);
+      }
+    });
+    setTimeout(()=>{
+      const totalCost=d3.sum(missionCircles.filter(m=>m.circle.style.opacity==='0'),m=>m.data.cost);
+      preventDisastersWithCost(totalCost);
+    },1000);
+  }
+}
+
+function preventDisastersWithCost(missionCost){
+  let remainingBudget=missionCost;
+  const sortedDisasters=disasterCircles.filter(d=>!preventedDisasters.has(d.data.id)).sort((a,b)=>a.data.damage-b.data.damage);
+  for(const item of sortedDisasters){
+    if(remainingBudget<=0)break;
+    const disasterCost=item.data.damage;
+    if(disasterCost<=remainingBudget){
+      preventedDisasters.add(item.data.id);
+      d3.select(item.circle).transition().duration(300).delay(Math.random()*200).attr('fill','#10b981').attr('stroke','#059669').attr('stroke-width',3).attr('fill-opacity',1);
+      remainingBudget-=disasterCost;
+    }
+  }
+  updateStats();
+}
+
+function renderBubbles(){
+  const w=700,h=600;
+  const spacePack=d3.pack().size([w-60,h-60]).padding(3);
+  const spaceRoot=d3.hierarchy({children:spaceMissions}).sum(d=>d.cost);
+  spacePack(spaceRoot);
+  const svgSpace=d3.select('#svgSpace');
+  svgSpace.selectAll('*').remove();
+  const spaceG=svgSpace.append('g').attr('transform','translate(30,30)');
+  missionCircles=[];
+  
+  const isFiltered=document.getElementById('disasterFilter').value!=='all';
+  
+  spaceG.selectAll('circle').data(spaceRoot.leaves()).enter().append('circle')
+    .attr('cx',d=>d.x).attr('cy',d=>d.y).attr('r',0)
+    .attr('fill','#1e40af').attr('fill-opacity',.8).attr('stroke','#1e3a8a').attr('stroke-width',2)
+    .on('click',function(e,d){
+      if(!isFiltered){
+        launchBubble(this,d.data,d.r);
+      }
+    })
+    .on('mouseenter',function(){d3.select(this).attr('fill-opacity',.9)})
+    .on('mouseleave',function(){d3.select(this).attr('fill-opacity',.8)})
+    .each(function(d){missionCircles.push({circle:this,data:d.data,radius:d.r})})
+    .transition().duration(1000).delay((d,i)=>i*3).attr('r',d=>d.r);
+  
+  // Min-max normalization for current filtered disasters
+  const values=earthEvents.map(d=>Math.max(d.damage,d.deaths*0.1));
+  const minVal=Math.min(...values);
+  const maxVal=Math.max(...values);
+  
+  const earthPack=d3.pack().size([w-60,h-60]).padding(0.5);
+  const earthRoot=d3.hierarchy({children:earthEvents}).sum(d=>{
+    const val=Math.max(d.damage,d.deaths*0.1);
+    const normalized=(val-minVal)/(maxVal-minVal);
+    return Math.pow(normalized,0.5)*1000+50;
+  });
+  earthPack(earthRoot);
+  const svgEarth=d3.select('#svgEarth');
+  svgEarth.selectAll('*').remove();
+  const earthG=svgEarth.append('g').attr('transform','translate(30,30)');
+  disasterCircles=[];
+  earthG.selectAll('circle').data(earthRoot.leaves()).enter().append('circle')
+    .attr('cx',d=>d.x).attr('cy',d=>d.y).attr('r',0)
+    .attr('fill',d=>preventedDisasters.has(d.data.id)?'#10b981':'#dc2626')
+    .attr('fill-opacity',.8)
+    .attr('stroke',d=>preventedDisasters.has(d.data.id)?'#059669':'#991b1b')
+    .attr('stroke-width',d=>preventedDisasters.has(d.data.id)?3:2.5)
+    .on('click',function(e,d){
+      if(isFiltered){
+        consumeMissionsForDisaster(this,d.data,d.r);
+      }else{
+        showDetails(d.data,'disaster');
+      }
+    })
+    .on('mouseenter',function(){d3.select(this).attr('fill-opacity',.9)})
+    .on('mouseleave',function(){d3.select(this).attr('fill-opacity',.8)})
+    .each(function(d){disasterCircles.push({circle:this,data:d.data})})
+    .transition().duration(1000).delay((d,i)=>i*2).attr('r',d=>d.r);
+}
+
+function consumeMissionsForDisaster(clickedCircle,disaster,radius){
+  if(preventedDisasters.has(disaster.id))return;
+  
+  const rect=clickedCircle.getBoundingClientRect();
+  const spaceChart=document.getElementById('svgSpace').getBoundingClientRect();
+  
+  const disasterCost=disaster.damage;
+  let remainingCost=disasterCost;
+  let consumedMissions=[];
+  
+  // Find smallest missions first to cover the cost
+  const availableMissions=missionCircles.filter(m=>m.circle.style.opacity!=='0').sort((a,b)=>a.data.cost-b.data.cost);
+  
+  for(const item of availableMissions){
+    if(remainingCost<=0)break;
+    consumedMissions.push(item);
+    remainingCost-=item.data.cost;
+  }
+  
+  // Check if we have enough missions
+  const totalMissionCost=d3.sum(consumedMissions,m=>m.data.cost);
+  if(totalMissionCost<disasterCost){
+    // Not enough missions - show details and don't proceed
+    showDetails(disaster,'disaster');
+    return;
+  }
+  
+  // Animate missions flying to this disaster - much faster
+  consumedMissions.forEach((mission,i)=>{
+    const mRect=mission.circle.getBoundingClientRect();
+    
+    // Remove from DOM immediately
+    d3.select(mission.circle).attr('r',0).attr('opacity',0);
+    mission.circle.style.opacity='0';
+    
+    const bubble=document.createElement('div');
+    bubble.className='flying-bubble';
+    bubble.style.width=(mission.radius*2)+'px';
+    bubble.style.height=(mission.radius*2)+'px';
+    bubble.style.left=(mRect.left+mRect.width/2-mission.radius)+'px';
+    bubble.style.top=(mRect.top+mRect.height/2-mission.radius)+'px';
+    bubble.style.background='radial-gradient(circle,#1e40af 0%,#1e3a8a 100%)';
+    bubble.style.boxShadow='0 0 30px rgba(30,64,175,0.6)';
+    document.body.appendChild(bubble);
+    
+    const targetX=rect.left+rect.width/2-mission.radius;
+    const targetY=rect.top+rect.height/2-mission.radius;
+    
+    bubble.animate([
+      {left:(mRect.left+mRect.width/2-mission.radius)+'px',top:(mRect.top+mRect.height/2-mission.radius)+'px',opacity:1},
+      {left:targetX+'px',top:targetY+'px',opacity:1}
+    ],{duration:400,easing:'ease-in-out'}).onfinish=()=>bubble.remove();
+  });
+  
+  // Turn disaster green and show details - 1 second total
+  setTimeout(()=>{
+    preventedDisasters.add(disaster.id);
+    d3.select(clickedCircle)
+      .transition().duration(300)
+      .attr('fill','#10b981')
+      .attr('stroke','#059669')
+      .attr('stroke-width',3)
+      .attr('fill-opacity',1);
+    updateStats();
+    showDetails(disaster,'disaster');
+  },600);
+}
+
+function showDetails(data,type){
+  if(type==='disaster'){
+    const isPrevented=preventedDisasters.has(data.id);
+    const status=isPrevented?'Could have been prevented':'Occurred';
+    const isFiltered=document.getElementById('disasterFilter').value!=='all';
+    
+    let missionsInfo='';
+    if(isFiltered&&!isPrevented){
+      const availableMissions=missionCircles.filter(m=>m.circle.style.opacity!=='0');
+      const totalAvailable=d3.sum(availableMissions,m=>m.data.cost);
+      
+      // Calculate how many missions needed
+      let neededMissions=[];
+      let remaining=data.damage;
+      for(const m of availableMissions.sort((a,b)=>a.data.cost-b.data.cost)){
+        if(remaining<=0)break;
+        neededMissions.push(m);
+        remaining-=m.data.cost;
+      }
+      
+      missionsInfo=`<div class="info" style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)">
+        <strong>Missions needed:</strong> ${neededMissions.length}<br>
+        <strong>Total cost:</strong> $${d3.format(',.1f')(d3.sum(neededMissions,m=>m.data.cost))}M<br>
+        <strong>Disaster cost:</strong> $${d3.format(',.1f')(data.damage)}M<br>
+        ${totalAvailable>=data.damage?'<span style="color:#10b981"> Can be prevented (click to prevent)</span>':'<span style="color:#dc2626"> Not enough missions</span>'}
+      </div>`;
+    }else if(isFiltered&&isPrevented){
+      missionsInfo=`<div class="info" style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);color:#10b981">
+        Prevented with space missions
+      </div>`;
+    }
+    
+    document.getElementById('sidebarTitle').textContent='Disaster Details';
+    document.getElementById('sidebarContent').innerHTML=`
+      <div class="detail-card">
+        <h3>${data.type.toUpperCase()}</h3>
+        <div class="info"><strong>Year:</strong> ${data.year}</div>
+        <div class="info"><strong>Country:</strong> ${data.country}</div>
+        <div class="info"><strong>Region:</strong> ${data.location}</div>
+        <div class="info"><strong>Deaths:</strong> <span class="value">${d3.format(',')(data.deaths)}</span></div>
+        <div class="info"><strong>Economic Damage:</strong> <span class="value">$${d3.format(',.1f')(data.damage)}M</span></div>
+        <div class="info"><strong>Status:</strong> ${status}</div>
+        ${missionsInfo}
+      </div>
+    `;
+  }
+  document.getElementById('sidebar').classList.add('show');
+}
+
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('show');
+}
+
+function toggleMetrics(){
+  document.getElementById('metrics').classList.toggle('show');
+}
+
+function toggleComparison(){
+  document.getElementById('comparison').classList.toggle('show');
+}
+
+function updateStats(){
+  const totalSpending=d3.sum(spaceMissions,s=>s.cost)/1000;
+  const totalDeaths=d3.sum(earthEvents,d=>d.deaths);
+  const totalDamage=d3.sum(earthEvents,d=>d.damage)/1000;
+  const prevented=preventedDisasters.size;
+  const damagePrevented=d3.sum(disasterCircles.filter(d=>preventedDisasters.has(d.data.id)),d=>d.data.damage)/1000;
+  document.getElementById('spaceCount').textContent=`${spaceMissions.length} missions`;
+  document.getElementById('earthCount').textContent=`${earthEvents.length} disasters`;
+  document.getElementById('statMissions').textContent=d3.format(',')(spaceMissions.length);
+  document.getElementById('statSpending').textContent='$'+d3.format(',.1f')(totalSpending)+'B';
+  document.getElementById('statDisasters').textContent=d3.format(',')(earthEvents.length);
+  document.getElementById('statDeaths').textContent=d3.format(',')(Math.round(totalDeaths));
+  document.getElementById('statDamage').textContent='$'+d3.format(',.0f')(totalDamage)+'B';
+  document.getElementById('statPrevented').textContent=d3.format(',')(prevented);
+  document.getElementById('statSaved').textContent='$'+d3.format(',.1f')(damagePrevented)+'B';
+  document.getElementById('compSpending').textContent='$'+d3.format(',.1f')(totalSpending)+'B';
+  document.getElementById('compDamage').textContent='$'+d3.format(',.0f')(totalDamage)+'B';
+}
+
+async function init(){
+  try{
+    [spaceMissions,allEarthEvents]=await Promise.all([loadSpaceData(),loadEarthData()]);
+    earthEvents=allEarthEvents;
+    console.log('Loaded:',spaceMissions.length,'missions,',earthEvents.length,'disasters');
+    document.getElementById('loading').style.display='none';
+    document.getElementById('content').style.display='block';
+    renderBubbles();
+    updateStats();
+  }catch(err){
+    console.error(err);
+    document.getElementById('loading').innerHTML=`Error: ${err.message}`;
+  }
+}
+
+function filterDisasters(){
+  const filterValue=document.getElementById('disasterFilter').value;
+  preventedDisasters.clear();
+  
+  if(filterValue==='all'){
+    earthEvents=allEarthEvents;
+  }else{
+    earthEvents=allEarthEvents.filter(d=>d.type.toLowerCase().includes(filterValue.toLowerCase()));
+  }
+  
+  renderBubbles();
+  updateStats();
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Economy: Investment to Jobs Flow</title>
+    
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/d3-sankey@0.12"></script>
+    
+    <style>
+        :root {
+            --bg-dark: #0a0e27;
+            --bg-section: #161b22;
+            --bg-tooltip: #1c2128;
+            --border: #30363d;
+            --text-primary: white;
+            --text-secondary: #8b949e;
+            --accent-gold: #ffd700;
+            --accent-green: #00d9a3;
+        }
+        
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: var(--bg-dark); 
+            color: var(--text-primary); 
+            margin: 0; 
+        }
+        
+        header, .controls, .legend { 
+            padding: 15px; 
+            background: var(--bg-section); 
+            text-align: center; 
+        }
+        
+        h1 { 
+            color: var(--accent-gold); 
+            font-size: 2rem; 
+            margin: 10px 0; 
+        }
+        
+        .subtitle, .stat-label, .tooltip-label, .legend-text { 
+            color: var(--text-secondary); 
+        }
+        
+        .subtitle { font-size: 1rem; }
+        
+        .stats-bar { 
+            display: flex; 
+            justify-content: center; 
+            gap: 30px; 
+            margin: 20px 0; 
+            flex-wrap: wrap; 
+        }
+        
+        .stat { text-align: center; }
+        .stat-value { 
+            font-size: 1.8rem; 
+            color: var(--accent-green); 
+            font-weight: bold; 
+        }
+        .stat-label { font-size: 0.8rem; margin-top: 3px; }
+        
+        .year-label { margin-bottom: 10px; }
+        .current-year { 
+            font-size: 1.3rem; 
+            color: var(--accent-gold); 
+            font-weight: bold; 
+        }
+        .year-slider { 
+            width: 80%; 
+            height: 6px; 
+            background: var(--border); 
+            border-radius: 3px; 
+            outline: none; 
+        }
+        
+        #viz-container { 
+            max-width: 1000px; 
+            margin: 15px auto; 
+            padding: 0 10px; 
+        }
+        
+        #sankey-viz { 
+            width: 100%; 
+            height: 350px; 
+            background: var(--bg-section); 
+            border-radius: 8px; 
+            border: 1px solid var(--border); 
+        }
+        
+        .link { 
+            fill: none; 
+            stroke-opacity: 0.4; 
+        }
+        .link:hover { stroke-opacity: 0.8; }
+        
+        .node rect { 
+            fill-opacity: 0.9; 
+            stroke: #0d1117; 
+            stroke-width: 1px; 
+            cursor: pointer; 
+        }
+        .node rect:hover { 
+            stroke: var(--accent-gold); 
+            stroke-width: 2px; 
+        }
+        .node text { 
+            font-size: 11px; 
+            fill: var(--text-primary); 
+            pointer-events: none; 
+            text-anchor: middle; 
+        }
+        
+        .tooltip { 
+            position: absolute; 
+            padding: 10px; 
+            background: var(--bg-tooltip); 
+            border: 1px solid var(--border); 
+            border-radius: 4px; 
+            opacity: 0; 
+            pointer-events: none; 
+            max-width: 250px; 
+        }
+        .tooltip.visible { opacity: 1; }
+        .tooltip-title { 
+            color: var(--accent-gold); 
+            font-weight: bold; 
+            margin-bottom: 5px; 
+        }
+        .tooltip-row { 
+            display: flex; 
+            justify-content: space-between; 
+            margin: 3px 0; 
+            font-size: 0.9rem; 
+        }
+        .tooltip-value { 
+            color: var(--text-primary); 
+            font-weight: 600; 
+        }
+        
+        .legend { 
+            max-width: 1000px; 
+            margin: 15px auto; 
+            padding: 10px; 
+            border-radius: 6px; 
+        }
+        .legend-title { 
+            font-weight: bold; 
+            margin-bottom: 10px; 
+        }
+        .legend-items { 
+            display: flex; 
+            gap: 20px; 
+            flex-wrap: wrap; 
+        }
+        .legend-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        .legend-color { 
+            width: 20px; 
+            height: 20px; 
+            border-radius: 3px; 
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Space Economy: Investment to Jobs Flow</h1>
+        <p class="subtitle">How space exploration creates high-paying jobs and drives economic growth (2012-2023)</p>
+        
+        <div class="stats-bar" id="stats-bar">
+            <div class="stat">
+                <div class="stat-value" id="total-jobs">240,891</div>
+                <div class="stat-label">Total Jobs</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="avg-salary">$119,198</div>
+                <div class="stat-label">Average Salary</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="gdp-value">$142.5B</div>
+                <div class="stat-label">GDP Contribution</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="growth-rate">+27.2%</div>
+                <div class="stat-label">Growth Since 2012</div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="controls">
+        <div class="year-control">
+            <div class="year-label">
+                <span>Select Year:</span>
+                <span class="current-year" id="current-year">2023</span>
+            </div>
+            <input 
+                type="range" 
+                min="2012" 
+                max="2023" 
+                value="2023" 
+                class="year-slider" 
+                id="year-slider"
+            >
+        </div>
+    </div>
+    
+    <div id="viz-container">
+        <svg id="sankey-viz"></svg>
+    </div>
+    
+    <div class="legend">
+        <div class="legend-title">Salary Levels (Average Annual Compensation)</div>
+        <div class="legend-items">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #FFD700;"></div>
+                <span class="legend-text">High: >$140K</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #FF8C00;"></div>
+                <span class="legend-text">Above Average: $100K-$140K</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #FFA500;"></div>
+                <span class="legend-text">Average: $85K-$100K</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #87CEEB;"></div>
+                <span class="legend-text">Below Space Avg: <$85K</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tooltip" id="tooltip"></div>
+    
+    <script>
+        const CONFIG = {
+            width: 1000,
+            height: 350,
+            margin: { top: 30, right: 180, bottom: 30, left: 180 },
+            nodeWidth: 20,
+            nodePadding: 20
+        };
+        
+        let currentYear = 2023;
+        let spaceData = null;
+        
+        function getSalaryColor(salary) {
+            if (salary >= 140) return '#FFD700';      // Gold: >$140K
+            if (salary >= 100) return '#FF8C00';      // Orange: $100-140K
+            if (salary >= 85) return '#FFA500';       // Light Orange: $85-100K
+            return '#87CEEB';                         // Light Blue: <$85K
+        }
+        
+        const flowGradient = d3.scaleLinear()
+            .domain([0, 1])
+            .range(['#0B3D91', '#00D9A3']);
+        
+        async function main() {
+            try {
+                const response = await fetch('/data/space_economy_data.json');
+                spaceData = await response.json();
+                
+                initVisualization();
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        }
+        
+        function processDataForYear(year) {
+            const yearStr = year.toString();
+            const totalData = spaceData.industries[0]; // Space economy1 - total
+            const industries = spaceData.industries.slice(3, 13); // Top 10 industries (skip totals)
+            
+            const nodes = [
+                { name: `Space Economy\n$${(totalData.gdpContribution[yearStr] / 1000).toFixed(1)}B` }
+            ];
+            
+            const links = [];
+            
+            const industryNodeMap = new Map(); // Map industry index to node index
+            
+            industries.forEach((industry, i) => {
+                const jobs = industry.employment[yearStr] || 0;
+                const salary = industry.avgSalary[yearStr] || 0;
+                const gdp = industry.gdpContribution[yearStr] || 0;
+                
+                if (jobs > 0) {
+                    const nodeName = `${industry.name.substring(0, 30)}\n${(jobs / 1000).toFixed(1)}K jobs`;
+                    const nodeIndex = nodes.length;
+                    nodes.push({ 
+                        name: nodeName,
+                        jobs: jobs,
+                        salary: salary,
+                        gdp: gdp
+                    });
+                    
+                    // Store mapping from industry index to node index
+                    industryNodeMap.set(i, nodeIndex);
+                    
+                    links.push({
+                        source: 0,
+                        target: nodeIndex,
+                        value: gdp
+                    });
+                }
+            });
+            
+            // Calculate total jobs for Economic Output
+            const totalJobs = totalData.employment[yearStr] || 0;
+            nodes.push({ 
+                name: `Economic Output\n${(totalJobs / 1000).toFixed(1)}K jobs`
+            });
+            
+            const outputIndex = nodes.length - 1;
+            industries.forEach((industry, i) => {
+                if (industry.employment[yearStr] > 0 && industryNodeMap.has(i)) {
+                    const nodeIndex = industryNodeMap.get(i);
+                    links.push({
+                        source: nodeIndex,
+                        target: outputIndex,
+                        value: industry.gdpContribution[yearStr] || 0
+                    });
+                }
+            });
+            
+            return { nodes, links };
+        }
+        
+        function drawSankey(year) {
+            const svg = d3.select('#sankey-viz');
+            svg.selectAll('*').remove();
+            
+            const { nodes, links } = processDataForYear(year);
+            
+            const svgElement = svg.node();
+            const svgWidth = svgElement.getBoundingClientRect().width;
+            const svgHeight = CONFIG.height;
+            
+            const centerX = (svgWidth - CONFIG.width) / 2;
+            const adjustedMarginLeft = CONFIG.margin.left + Math.max(0, centerX);
+            const adjustedMarginRight = CONFIG.margin.right + Math.max(0, centerX);
+            
+            const sankey = d3.sankey()
+                .nodeWidth(CONFIG.nodeWidth)
+                .nodePadding(CONFIG.nodePadding)
+                .extent([
+                    [adjustedMarginLeft, CONFIG.margin.top],
+                    [svgWidth - adjustedMarginRight, CONFIG.height - CONFIG.margin.bottom]
+                ]);
+            
+            const { nodes: sankeyNodes, links: sankeyLinks } = sankey({
+                nodes: nodes.map(d => Object.assign({}, d)),
+                links: links.map(d => Object.assign({}, d))
+            });
+            
+            const link = svg.append('g')
+                .selectAll('path')
+                .data(sankeyLinks)
+                .join('path')
+                .attr('class', 'link')
+                .attr('d', d3.sankeyLinkHorizontal())
+                .attr('stroke', d => flowGradient(d.source.x0 / CONFIG.width))
+                .attr('stroke-width', d => Math.max(1, d.width))
+                .on('mouseover', handleLinkHover)
+                .on('mouseout', hideTooltip);
+            
+            const node = svg.append('g')
+                .selectAll('g')
+                .data(sankeyNodes)
+                .join('g')
+                .attr('class', 'node');
+            
+            node.append('rect')
+                .attr('x', d => d.x0)
+                .attr('y', d => d.y0)
+                .attr('height', d => d.y1 - d.y0)
+                .attr('width', d => d.x1 - d.x0)
+                .attr('fill', d => {
+                    if (d.salary) return getSalaryColor(d.salary);
+                    if (d.x0 < CONFIG.margin.left + 50) return '#0B3D91';
+                    return '#7FFF00';
+                })
+                .on('mouseover', handleNodeHover)
+                .on('mouseout', hideTooltip);
+            
+            node.append('text')
+                .attr('x', d => (d.x0 + d.x1) / 2)
+                .attr('y', d => (d.y0 + d.y1) / 2)
+                .attr('text-anchor', 'middle')
+                .attr('dominant-baseline', 'middle')
+                .text(d => d.name)
+                .style('font-size', '11px');
+        }
+        
+        function handleNodeHover(event, d) {
+            const tooltip = d3.select('#tooltip');
+            
+            let html = `<div class="tooltip-title">${d.name.split('\n')[0]}</div>`;
+            
+            if (d.jobs) {
+                html += `
+                    <div class="tooltip-row">
+                        <span class="tooltip-label">Jobs:</span>
+                        <span class="tooltip-value">${d.jobs.toLocaleString()}</span>
+                    </div>
+                    <div class="tooltip-row">
+                        <span class="tooltip-label">Avg Salary:</span>
+                        <span class="tooltip-value">$${(d.salary * 1000).toLocaleString()}</span>
+                    </div>
+                    <div class="tooltip-row">
+                        <span class="tooltip-label">GDP Contribution:</span>
+                        <span class="tooltip-value">$${(d.gdp / 1000).toFixed(2)}B</span>
+                    </div>
+                `;
+            }
+            
+            tooltip.html(html)
+                .style('left', (event.pageX + 15) + 'px')
+                .style('top', (event.pageY - 28) + 'px')
+                .classed('visible', true);
+        }
+        
+        function handleLinkHover(event, d) {
+            const tooltip = d3.select('#tooltip');
+            
+            tooltip.html(`
+                <div class="tooltip-title">Flow</div>
+                <div class="tooltip-row">
+                    <span class="tooltip-label">From:</span>
+                    <span class="tooltip-value">${d.source.name.split('\n')[0]}</span>
+                </div>
+                <div class="tooltip-row">
+                    <span class="tooltip-label">To:</span>
+                    <span class="tooltip-value">${d.target.name.split('\n')[0]}</span>
+                </div>
+                <div class="tooltip-row">
+                    <span class="tooltip-label">Value:</span>
+                    <span class="tooltip-value">$${(d.value / 1000).toFixed(2)}B</span>
+                </div>
+            `)
+                .style('left', (event.pageX + 15) + 'px')
+                .style('top', (event.pageY - 28) + 'px')
+                .classed('visible', true);
+        }
+        
+        function hideTooltip() {
+            d3.select('#tooltip').classed('visible', false);
+        }
+        
+        function updateStats(year) {
+            const yearStr = year.toString();
+            const totalData = spaceData.industries[0];
+            
+            document.getElementById('total-jobs').textContent = 
+                totalData.employment[yearStr].toLocaleString();
+            document.getElementById('avg-salary').textContent = 
+                '$' + (totalData.avgSalary[yearStr] * 1000).toLocaleString();
+            document.getElementById('gdp-value').textContent = 
+                '$' + (totalData.gdpContribution[yearStr] / 1000).toFixed(1) + 'B';
+            
+            const growth = ((totalData.employment[yearStr] / totalData.employment['2012'] - 1) * 100).toFixed(1);
+            document.getElementById('growth-rate').textContent = '+' + growth + '%';
+        }
+        
+        document.getElementById('year-slider').addEventListener('input', function(e) {
+            currentYear = parseInt(e.target.value);
+            document.getElementById('current-year').textContent = currentYear;
+            updateStats(currentYear);
+            drawSankey(currentYear);
+        });
+        
+        function initVisualization() {
+            updateStats(currentYear);
+            drawSankey(currentYear);
+        }
+        
+        main();
+    </script>
+</body>
+</html>
