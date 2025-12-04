@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>Space Exploration - A Data Story</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <div id="app">
+        <!-- Landing Section -->
+        <section id="landing" class="section">
+            <!-- Stars Background -->
+            <div id="stars" aria-hidden="true"></div>
+
+            <!-- Debris container -->
+            <div id="debris-container" aria-hidden="true"></div>
+
+            <!-- Earth container -->
+            <div id="earth-container" aria-hidden="true">
+                <div id="earth">
+                    <!-- Earth texture will be generated via CSS if image fails -->
+                    <img id="earth-img" src="./assets/earth8.png" alt="" loading="eager" decoding="async"
+                        onerror="this.style.display='none'" />
+                </div>
+            </div>
+
+            <!-- Rocket -->
+            <div id="rocket" aria-hidden="true">
+                <div class="rocket-visual">
+                    <!-- Real shuttle image (hidden by default, can be toggled) -->
+                    <img id="rocket-img" src="./assets/rocket1.webp" alt="" onerror="this.style.display='none'" />
+
+                    <!-- SVG rocket (default) -->
+                    <svg id="rocket-svg" viewBox="0 0 120 240" xmlns="http://www.w3.org/2000/svg" role="img"
+                        aria-label="Rocket">
+                        <defs>
+                            <linearGradient id="hullGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0" stop-color="#f8fafc" />
+                                <stop offset="0.45" stop-color="#ffffff" />
+                                <stop offset="1" stop-color="#cbd5e1" />
+                            </linearGradient>
+                            <linearGradient id="redGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0" stop-color="#ef4444" />
+                                <stop offset="1" stop-color="#991b1b" />
+                            </linearGradient>
+                            <linearGradient id="bellGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0" stop-color="#475569" />
+                                <stop offset="1" stop-color="#0f172a" />
+                            </linearGradient>
+                            <radialGradient id="glassGrad" cx="30%" cy="30%" r="75%">
+                                <stop offset="0" stop-color="#dbeafe" stop-opacity="1" />
+                                <stop offset="0.35" stop-color="#60a5fa" stop-opacity="0.95" />
+                                <stop offset="1" stop-color="#1e40af" stop-opacity="1" />
+                            </radialGradient>
+                            <filter id="metallic">
+                                <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
+                                <feOffset dx="1" dy="2" result="offsetblur" />
+                                <feComponentTransfer>
+                                    <feFuncA type="linear" slope="0.3" />
+                                </feComponentTransfer>
+                                <feMerge>
+                                    <feMergeNode />
+                                    <feMergeNode in="SourceGraphic" />
+                                </feMerge>
+                            </filter>
+                        </defs>
+
+                        <!-- Nose -->
+                        <path d="M60 10 C45 30 40 55 40 80 L80 80 C80 55 75 30 60 10 Z" fill="url(#redGrad)"
+                            filter="url(#metallic)" />
+                        <!-- Hull -->
+                        <rect x="32" y="78" width="56" height="120" rx="28" fill="url(#hullGrad)"
+                            filter="url(#metallic)" />
+                        <!-- Window -->
+                        <circle cx="60" cy="120" r="16" fill="url(#glassGrad)" stroke="rgba(255,255,255,0.55)"
+                            stroke-width="2" />
+                        <circle cx="54" cy="114" r="5" fill="rgba(255,255,255,0.25)" />
+                        <!-- Stripe -->
+                        <rect x="32" y="160" width="56" height="14" rx="7" fill="url(#redGrad)" opacity="0.95" />
+                        <!-- Fins -->
+                        <path d="M32 160 L16 190 L32 190 Z" fill="url(#redGrad)" opacity="0.95" />
+                        <path d="M88 160 L104 190 L88 190 Z" fill="url(#redGrad)" opacity="0.95" />
+                        <!-- Engine -->
+                        <path d="M44 190 C46 220 74 220 76 190 Z" fill="url(#bellGrad)" filter="url(#metallic)" />
+                        <ellipse cx="60" cy="200" rx="12" ry="6" fill="#0f172a" opacity="0.8" />
+                        <rect x="52" y="195" width="16" height="10" rx="4" fill="#1e293b" opacity="0.7" />
+                    </svg>
+                </div>
+
+                <!-- Exhaust flames -->
+                <div id="exhaust-container" aria-hidden="true"></div>
+            </div>
+
+            <!-- Title Overlay -->
+            <div id="title-overlay">
+                <h1>SPACE EXPLORATION</h1>
+                <div class="divider"></div>
+                <p>A Journey Through Data &amp; Discovery</p>
+
+
+            </div>
+        </section>
+
+        <!-- Visualization Section 1 -->
+        <section id="viz-section-1" class="section viz-section">
+            <div class="viz-container">
+                <h2>GLOBAL LAUNCHES</h2>
+                <div class="divider"></div>
+                <p class="subtitle">Tracking space missions worldwide</p>
+                <div id="d3-viz-1" class="viz-placeholder">
+                    <div class="placeholder-content">
+                        <span class="icon">🚀</span>
+                        <p>Interactive world map showing launch sites and frequencies</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Visualization Section 2 -->
+        <section id="viz-section-2" class="section viz-section">
+            <div class="viz-container">
+                <h2>MISSION SUCCESS</h2>
+                <div class="divider"></div>
+                <p class="subtitle">Success rates over time</p>
+                <div id="d3-viz-2" class="viz-placeholder">
+                    <div class="placeholder-content">
+                        <span class="icon">📈</span>
+                        <p>Time series analysis of mission outcomes</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Visualization Section 3 -->
+        <section id="viz-section-3" class="section viz-section">
+            <div class="viz-container">
+                <h2>SPACE TIMELINE</h2>
+                <div class="divider"></div>
+                <p class="subtitle">Key milestones in exploration</p>
+                <div id="d3-viz-3" class="viz-placeholder">
+                    <div class="placeholder-content">
+                        <span class="icon">🛰️</span>
+                        <p>Historical timeline of major achievements</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
