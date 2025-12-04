@@ -13,28 +13,17 @@
     <div id="app">
         <!-- Landing Section -->
         <section id="landing" class="section">
-            <!-- Stars Background -->
             <div id="stars" aria-hidden="true"></div>
-
-            <!-- Debris container -->
             <div id="debris-container" aria-hidden="true"></div>
-
-            <!-- Earth container -->
             <div id="earth-container" aria-hidden="true">
                 <div id="earth">
-                    <!-- Earth texture will be generated via CSS if image fails -->
                     <img id="earth-img" src="./assets/earth8.png" alt="" loading="eager" decoding="async"
                         onerror="this.style.display='none'" />
                 </div>
             </div>
-
-            <!-- Rocket -->
             <div id="rocket" aria-hidden="true">
                 <div class="rocket-visual">
-                    <!-- Real shuttle image (hidden by default, can be toggled) -->
                     <img id="rocket-img" src="./assets/rocket1.webp" alt="" onerror="this.style.display='none'" />
-
-                    <!-- SVG rocket (default) -->
                     <svg id="rocket-svg" viewBox="0 0 120 240" xmlns="http://www.w3.org/2000/svg" role="img"
                         aria-label="Rocket">
                         <defs>
@@ -68,90 +57,151 @@
                                 </feMerge>
                             </filter>
                         </defs>
-
-                        <!-- Nose -->
                         <path d="M60 10 C45 30 40 55 40 80 L80 80 C80 55 75 30 60 10 Z" fill="url(#redGrad)"
                             filter="url(#metallic)" />
-                        <!-- Hull -->
                         <rect x="32" y="78" width="56" height="120" rx="28" fill="url(#hullGrad)"
                             filter="url(#metallic)" />
-                        <!-- Window -->
                         <circle cx="60" cy="120" r="16" fill="url(#glassGrad)" stroke="rgba(255,255,255,0.55)"
                             stroke-width="2" />
                         <circle cx="54" cy="114" r="5" fill="rgba(255,255,255,0.25)" />
-                        <!-- Stripe -->
                         <rect x="32" y="160" width="56" height="14" rx="7" fill="url(#redGrad)" opacity="0.95" />
-                        <!-- Fins -->
                         <path d="M32 160 L16 190 L32 190 Z" fill="url(#redGrad)" opacity="0.95" />
                         <path d="M88 160 L104 190 L88 190 Z" fill="url(#redGrad)" opacity="0.95" />
-                        <!-- Engine -->
                         <path d="M44 190 C46 220 74 220 76 190 Z" fill="url(#bellGrad)" filter="url(#metallic)" />
                         <ellipse cx="60" cy="200" rx="12" ry="6" fill="#0f172a" opacity="0.8" />
                         <rect x="52" y="195" width="16" height="10" rx="4" fill="#1e293b" opacity="0.7" />
                     </svg>
                 </div>
-
-                <!-- Exhaust flames -->
                 <div id="exhaust-container" aria-hidden="true"></div>
             </div>
-
-            <!-- Title Overlay -->
             <div id="title-overlay">
                 <h1>SPACE EXPLORATION</h1>
                 <div class="divider"></div>
                 <p>A Journey Through Data &amp; Discovery</p>
-
-
             </div>
         </section>
 
-        <!-- Visualization Section 1 -->
+        <!-- Section 1: Space Pays Back on Earth (manya1) -->
         <section id="viz-section-1" class="section viz-section">
             <div class="viz-container">
-                <h2>GLOBAL LAUNCHES</h2>
+                <h2>SPACE PAYS BACK ON EARTH</h2>
                 <div class="divider"></div>
-                <p class="subtitle">Tracking space missions worldwide</p>
-                <div id="d3-viz-1" class="viz-placeholder">
-                    <div class="placeholder-content">
-                        <span class="icon">🚀</span>
-                        <p>Interactive world map showing launch sites and frequencies</p>
-                    </div>
-                </div>
+                <p class="subtitle">Real-world technologies from space R&D</p>
+                <div id="manya1-viz" class="viz-content"></div>
             </div>
         </section>
 
-        <!-- Visualization Section 2 -->
+        <!-- Section 2: Can We Afford Space? (manya2) -->
         <section id="viz-section-2" class="section viz-section">
             <div class="viz-container">
-                <h2>MISSION SUCCESS</h2>
+                <h2>CAN WE AFFORD SPACE?</h2>
                 <div class="divider"></div>
-                <p class="subtitle">Success rates over time</p>
-                <div id="d3-viz-2" class="viz-placeholder">
-                    <div class="placeholder-content">
-                        <span class="icon">📈</span>
-                        <p>Time series analysis of mission outcomes</p>
-                    </div>
-                </div>
+                <p class="subtitle">Public spending vs space economy output</p>
+                <div id="manya2-viz" class="viz-content"></div>
             </div>
         </section>
 
-        <!-- Visualization Section 3 -->
+        <!-- Section 3: International Collaboration (vivek1) -->
         <section id="viz-section-3" class="section viz-section">
             <div class="viz-container">
-                <h2>SPACE TIMELINE</h2>
+                <h2>INTERNATIONAL COOPERATION</h2>
                 <div class="divider"></div>
-                <p class="subtitle">Key milestones in exploration</p>
-                <div id="d3-viz-3" class="viz-placeholder">
-                    <div class="placeholder-content">
-                        <span class="icon">🛰️</span>
-                        <p>Historical timeline of major achievements</p>
-                    </div>
-                </div>
+                <p class="subtitle">Network of global space partnerships</p>
+                <div id="vivek1-viz" class="viz-content"></div>
+            </div>
+        </section>
+
+        <!-- Section 4: Investment to Jobs Flow (vivek2) -->
+        <section id="viz-section-4" class="section viz-section">
+            <div class="viz-container">
+                <h2>INVESTMENT TO JOBS FLOW</h2>
+                <div class="divider"></div>
+                <p class="subtitle">How space creates high-paying careers</p>
+                <div id="vivek2-viz" class="viz-content"></div>
+            </div>
+        </section>
+
+        <!-- Section 5: Budget vs Time (sehas1) -->
+        <section id="viz-section-5" class="section viz-section">
+            <div class="viz-container">
+                <h2>MISSION OUTCOMES</h2>
+                <div class="divider"></div>
+                <p class="subtitle">Budget trends: Success vs Failure</p>
+                <div id="sehas1-viz" class="viz-content"></div>
+            </div>
+        </section>
+
+        <!-- Section 6: Top Budget Missions (sehas2) -->
+        <section id="viz-section-6" class="section viz-section">
+            <div class="viz-container">
+                <h2>TOP-BUDGET MISSIONS</h2>
+                <div class="divider"></div>
+                <p class="subtitle">Highest-cost space missions by year</p>
+                <div id="sehas2-viz" class="viz-content"></div>
+            </div>
+        </section>
+
+        <!-- Section 7: Space vs Climate (samyogita1) -->
+        <section id="viz-section-7" class="section viz-section">
+            <div class="viz-container">
+                <h2>SPACE VS CLIMATE</h2>
+                <div class="divider"></div>
+                <p class="subtitle">Comparing space spending with disaster costs</p>
+                <div id="samyogita1-viz" class="viz-content"></div>
+            </div>
+        </section>
+
+        <!-- Section 8: The Debris Prison (samyogita2) -->
+        <section id="viz-section-8" class="section viz-section">
+            <div class="viz-container">
+                <h2>THE DEBRIS PRISON</h2>
+                <div class="divider"></div>
+                <p class="subtitle">Visualizing space debris accumulation</p>
+                <div id="samyogita2-viz" class="viz-content"></div>
+            </div>
+        </section>
+
+        <!-- Section 9: Mission Analysis (razan1) -->
+        <section id="viz-section-9" class="section viz-section">
+            <div class="viz-container">
+                <h2>MISSION ANALYSIS</h2>
+                <div class="divider"></div>
+                <p class="subtitle">Cost vs Duration across countries</p>
+                <div id="razan1-viz" class="viz-content"></div>
+            </div>
+        </section>
+
+        <!-- Section 10: Byproduct Technologies (aryan1) -->
+        <section id="viz-section-10" class="section viz-section">
+            <div class="viz-container">
+                <h2>BYPRODUCT TECHNOLOGIES</h2>
+                <div class="divider"></div>
+                <p class="subtitle">Space innovations impacting daily life</p>
+                <div id="aryan1-viz" class="viz-content"></div>
             </div>
         </section>
     </div>
 
+    <!-- D3.js and other libraries -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/d3-sankey@0.12"></script>
+    <script src="https://unpkg.com/d3-simple-slider"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Main app script -->
     <script src="app.js"></script>
+
+    <!-- Visualization modules -->
+    <script src="js/manya1.js"></script>
+    <script src="js/manya2.js"></script>
+    <script src="js/vivek1.js"></script>
+    <script src="js/vivek2.js"></script>
+    <script src="js/sehas1.js"></script>
+    <script src="js/sehas2.js"></script>
+    <script src="js/samyogita1.js"></script>
+    <script src="js/samyogita2.js"></script>
+    <script src="js/razan1.js"></script>
+    <script src="js/aryan1.js"></script>
 </body>
 
 </html>

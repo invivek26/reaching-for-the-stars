@@ -1,0 +1,1558 @@
+{
+  "name": "Space Technologies",
+  "children": [
+    {
+      "name": "Medical",
+      "color": "#ff9999",
+      "children": [
+        {
+          "name": "IR Thermometer",
+          "impactDetail": "5 Billion temperature readings annually",
+          "value": 5000,
+          "economicValue": 12.5,
+          "livesSaved": 500000,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 8.2
+            },
+            {
+              "year": 2019,
+              "value": 9.1
+            },
+            {
+              "year": 2020,
+              "value": 11.8
+            },
+            {
+              "year": 2021,
+              "value": 12
+            },
+            {
+              "year": 2022,
+              "value": 12.3
+            },
+            {
+              "year": 2023,
+              "value": 12.5
+            },
+            {
+              "year": 2024,
+              "value": 13.1
+            }
+          ]
+        },
+        {
+          "name": "CAT/MRI Scan",
+          "impactDetail": "600M patients diagnosed annually",
+          "value": 600,
+          "economicValue": 45.7,
+          "livesSaved": 2500000,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 38.2
+            },
+            {
+              "year": 2019,
+              "value": 40.1
+            },
+            {
+              "year": 2020,
+              "value": 41.8
+            },
+            {
+              "year": 2021,
+              "value": 43.2
+            },
+            {
+              "year": 2022,
+              "value": 44.5
+            },
+            {
+              "year": 2023,
+              "value": 45.7
+            },
+            {
+              "year": 2024,
+              "value": 47.3
+            }
+          ]
+        },
+        {
+          "name": "Robotic Surgery",
+          "impactDetail": "10M procedures performed",
+          "value": 10,
+          "economicValue": 8.9,
+          "livesSaved": 150000,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 5.2
+            },
+            {
+              "year": 2019,
+              "value": 6.1
+            },
+            {
+              "year": 2020,
+              "value": 6.8
+            },
+            {
+              "year": 2021,
+              "value": 7.5
+            },
+            {
+              "year": 2022,
+              "value": 8.2
+            },
+            {
+              "year": 2023,
+              "value": 8.9
+            },
+            {
+              "year": 2024,
+              "value": 9.8
+            }
+          ]
+        },
+        {
+          "name": "Heart Pumps",
+          "impactDetail": "50K people with implants",
+          "value": 0.05,
+          "economicValue": 2.3,
+          "livesSaved": 45000,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 1.6
+            },
+            {
+              "year": 2019,
+              "value": 1.8
+            },
+            {
+              "year": 2020,
+              "value": 1.9
+            },
+            {
+              "year": 2021,
+              "value": 2
+            },
+            {
+              "year": 2022,
+              "value": 2.2
+            },
+            {
+              "year": 2023,
+              "value": 2.3
+            },
+            {
+              "year": 2024,
+              "value": 2.5
+            }
+          ]
+        },
+        {
+          "name": "Dialysis",
+          "impactDetail": "2M patients worldwide",
+          "value": 2,
+          "economicValue": 6.8,
+          "livesSaved": 1800000,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 5.1
+            },
+            {
+              "year": 2019,
+              "value": 5.5
+            },
+            {
+              "year": 2020,
+              "value": 5.9
+            },
+            {
+              "year": 2021,
+              "value": 6.2
+            },
+            {
+              "year": 2022,
+              "value": 6.5
+            },
+            {
+              "year": 2023,
+              "value": 6.8
+            },
+            {
+              "year": 2024,
+              "value": 7.2
+            }
+          ]
+        },
+        {
+          "name": "Artificial Limbs",
+          "impactDetail": "5M people benefited",
+          "value": 5,
+          "economicValue": 4.2,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 2.8
+            },
+            {
+              "year": 2019,
+              "value": 3.2
+            },
+            {
+              "year": 2020,
+              "value": 3.5
+            },
+            {
+              "year": 2021,
+              "value": 3.8
+            },
+            {
+              "year": 2022,
+              "value": 4
+            },
+            {
+              "year": 2023,
+              "value": 4.2
+            },
+            {
+              "year": 2024,
+              "value": 4.6
+            }
+          ]
+        },
+        {
+          "name": "Invisible Braces",
+          "impactDetail": "8M treatments annually",
+          "value": 8,
+          "economicValue": 3.5,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 2.1
+            },
+            {
+              "year": 2019,
+              "value": 2.5
+            },
+            {
+              "year": 2020,
+              "value": 2.8
+            },
+            {
+              "year": 2021,
+              "value": 3
+            },
+            {
+              "year": 2022,
+              "value": 3.3
+            },
+            {
+              "year": 2023,
+              "value": 3.5
+            },
+            {
+              "year": 2024,
+              "value": 3.9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Communication",
+      "color": "#66cdaa",
+      "children": [
+        {
+          "name": "GPS",
+          "impactDetail": "8 Billion devices using GPS",
+          "value": 8000,
+          "economicValue": 1400,
+          "livesSaved": 250000,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 980
+            },
+            {
+              "year": 2019,
+              "value": 1050
+            },
+            {
+              "year": 2020,
+              "value": 1150
+            },
+            {
+              "year": 2021,
+              "value": 1250
+            },
+            {
+              "year": 2022,
+              "value": 1320
+            },
+            {
+              "year": 2023,
+              "value": 1400
+            },
+            {
+              "year": 2024,
+              "value": 1485
+            }
+          ]
+        },
+        {
+          "name": "Camera Phones",
+          "impactDetail": "6 Billion camera-equipped phones",
+          "value": 6000,
+          "economicValue": 285,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 215
+            },
+            {
+              "year": 2019,
+              "value": 235
+            },
+            {
+              "year": 2020,
+              "value": 250
+            },
+            {
+              "year": 2021,
+              "value": 262
+            },
+            {
+              "year": 2022,
+              "value": 273
+            },
+            {
+              "year": 2023,
+              "value": 285
+            },
+            {
+              "year": 2024,
+              "value": 298
+            }
+          ]
+        },
+        {
+          "name": "Satellite TV",
+          "impactDetail": "1 Billion households",
+          "value": 1000,
+          "economicValue": 95,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 88
+            },
+            {
+              "year": 2019,
+              "value": 90
+            },
+            {
+              "year": 2020,
+              "value": 92
+            },
+            {
+              "year": 2021,
+              "value": 93
+            },
+            {
+              "year": 2022,
+              "value": 94
+            },
+            {
+              "year": 2023,
+              "value": 95
+            },
+            {
+              "year": 2024,
+              "value": 96
+            }
+          ]
+        },
+        {
+          "name": "Internet Satellites",
+          "impactDetail": "500M people connected",
+          "value": 500,
+          "economicValue": 125,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 45
+            },
+            {
+              "year": 2019,
+              "value": 62
+            },
+            {
+              "year": 2020,
+              "value": 78
+            },
+            {
+              "year": 2021,
+              "value": 95
+            },
+            {
+              "year": 2022,
+              "value": 110
+            },
+            {
+              "year": 2023,
+              "value": 125
+            },
+            {
+              "year": 2024,
+              "value": 148
+            }
+          ]
+        },
+        {
+          "name": "Weather Forecasting",
+          "impactDetail": "7 Billion people",
+          "value": 7000,
+          "economicValue": 162,
+          "livesSaved": 500000,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 135
+            },
+            {
+              "year": 2019,
+              "value": 142
+            },
+            {
+              "year": 2020,
+              "value": 148
+            },
+            {
+              "year": 2021,
+              "value": 153
+            },
+            {
+              "year": 2022,
+              "value": 158
+            },
+            {
+              "year": 2023,
+              "value": 162
+            },
+            {
+              "year": 2024,
+              "value": 168
+            }
+          ]
+        },
+        {
+          "name": "Wireless Headsets",
+          "impactDetail": "2 Billion users",
+          "value": 2000,
+          "economicValue": 45,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 28
+            },
+            {
+              "year": 2019,
+              "value": 32
+            },
+            {
+              "year": 2020,
+              "value": 36
+            },
+            {
+              "year": 2021,
+              "value": 40
+            },
+            {
+              "year": 2022,
+              "value": 43
+            },
+            {
+              "year": 2023,
+              "value": 45
+            },
+            {
+              "year": 2024,
+              "value": 48
+            }
+          ]
+        },
+        {
+          "name": "Video Calls",
+          "impactDetail": "3 Billion users",
+          "value": 3000,
+          "economicValue": 78,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 42
+            },
+            {
+              "year": 2019,
+              "value": 48
+            },
+            {
+              "year": 2020,
+              "value": 68
+            },
+            {
+              "year": 2021,
+              "value": 72
+            },
+            {
+              "year": 2022,
+              "value": 75
+            },
+            {
+              "year": 2023,
+              "value": 78
+            },
+            {
+              "year": 2024,
+              "value": 82
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Safety",
+      "color": "#ffcc99",
+      "children": [
+        {
+          "name": "Smoke Detectors",
+          "impactDetail": "500M households protected",
+          "value": 500,
+          "economicValue": 45.2,
+          "livesSaved": 3200000,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 38.5
+            },
+            {
+              "year": 2019,
+              "value": 40.2
+            },
+            {
+              "year": 2020,
+              "value": 41.8
+            },
+            {
+              "year": 2021,
+              "value": 43.1
+            },
+            {
+              "year": 2022,
+              "value": 44.3
+            },
+            {
+              "year": 2023,
+              "value": 45.2
+            },
+            {
+              "year": 2024,
+              "value": 46.8
+            }
+          ]
+        },
+        {
+          "name": "Fire-Resistant Materials",
+          "impactDetail": "200K firefighters equipped",
+          "value": 0.2,
+          "economicValue": 8.5,
+          "livesSaved": 125000,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 6.2
+            },
+            {
+              "year": 2019,
+              "value": 6.8
+            },
+            {
+              "year": 2020,
+              "value": 7.3
+            },
+            {
+              "year": 2021,
+              "value": 7.8
+            },
+            {
+              "year": 2022,
+              "value": 8.1
+            },
+            {
+              "year": 2023,
+              "value": 8.5
+            },
+            {
+              "year": 2024,
+              "value": 9.1
+            }
+          ]
+        },
+        {
+          "name": "Emergency Blankets",
+          "impactDetail": "50M+ blankets distributed",
+          "value": 50,
+          "economicValue": 1.8,
+          "livesSaved": 380000,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 1.2
+            },
+            {
+              "year": 2019,
+              "value": 1.3
+            },
+            {
+              "year": 2020,
+              "value": 1.5
+            },
+            {
+              "year": 2021,
+              "value": 1.6
+            },
+            {
+              "year": 2022,
+              "value": 1.7
+            },
+            {
+              "year": 2023,
+              "value": 1.8
+            },
+            {
+              "year": 2024,
+              "value": 1.9
+            }
+          ]
+        },
+        {
+          "name": "Jaws of Life",
+          "impactDetail": "150K rescues annually",
+          "value": 0.15,
+          "economicValue": 2.3,
+          "livesSaved": 145000,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 1.8
+            },
+            {
+              "year": 2019,
+              "value": 1.9
+            },
+            {
+              "year": 2020,
+              "value": 2
+            },
+            {
+              "year": 2021,
+              "value": 2.1
+            },
+            {
+              "year": 2022,
+              "value": 2.2
+            },
+            {
+              "year": 2023,
+              "value": 2.3
+            },
+            {
+              "year": 2024,
+              "value": 2.5
+            }
+          ]
+        },
+        {
+          "name": "Airbag Sensors",
+          "impactDetail": "1.5 Billion vehicles",
+          "value": 1500,
+          "economicValue": 28.5,
+          "livesSaved": 2100000,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 22.5
+            },
+            {
+              "year": 2019,
+              "value": 24.1
+            },
+            {
+              "year": 2020,
+              "value": 25.3
+            },
+            {
+              "year": 2021,
+              "value": 26.5
+            },
+            {
+              "year": 2022,
+              "value": 27.4
+            },
+            {
+              "year": 2023,
+              "value": 28.5
+            },
+            {
+              "year": 2024,
+              "value": 29.8
+            }
+          ]
+        },
+        {
+          "name": "Radial Tires",
+          "impactDetail": "2 Billion tires annually",
+          "value": 2000,
+          "economicValue": 52.3,
+          "livesSaved": 850000,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 45.2
+            },
+            {
+              "year": 2019,
+              "value": 47.3
+            },
+            {
+              "year": 2020,
+              "value": 48.9
+            },
+            {
+              "year": 2021,
+              "value": 50.1
+            },
+            {
+              "year": 2022,
+              "value": 51.2
+            },
+            {
+              "year": 2023,
+              "value": 52.3
+            },
+            {
+              "year": 2024,
+              "value": 54.1
+            }
+          ]
+        },
+        {
+          "name": "Anti-Icing Systems",
+          "impactDetail": "100M flights protected",
+          "value": 100,
+          "economicValue": 12.8,
+          "livesSaved": 420000,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 9.5
+            },
+            {
+              "year": 2019,
+              "value": 10.3
+            },
+            {
+              "year": 2020,
+              "value": 10.9
+            },
+            {
+              "year": 2021,
+              "value": 11.5
+            },
+            {
+              "year": 2022,
+              "value": 12.1
+            },
+            {
+              "year": 2023,
+              "value": 12.8
+            },
+            {
+              "year": 2024,
+              "value": 13.6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Consumer",
+      "color": "#ffffcc",
+      "children": [
+        {
+          "name": "Memory Foam",
+          "impactDetail": "300M+ foam products in use",
+          "value": 300,
+          "economicValue": 40.5,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 28.5
+            },
+            {
+              "year": 2019,
+              "value": 31.2
+            },
+            {
+              "year": 2020,
+              "value": 34.1
+            },
+            {
+              "year": 2021,
+              "value": 36.8
+            },
+            {
+              "year": 2022,
+              "value": 38.9
+            },
+            {
+              "year": 2023,
+              "value": 40.5
+            },
+            {
+              "year": 2024,
+              "value": 43.2
+            }
+          ]
+        },
+        {
+          "name": "Scratch-Resistant Lenses",
+          "impactDetail": "700M eyeglasses treated",
+          "value": 700,
+          "economicValue": 18.5,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 14.2
+            },
+            {
+              "year": 2019,
+              "value": 15.3
+            },
+            {
+              "year": 2020,
+              "value": 16.1
+            },
+            {
+              "year": 2021,
+              "value": 17
+            },
+            {
+              "year": 2022,
+              "value": 17.8
+            },
+            {
+              "year": 2023,
+              "value": 18.5
+            },
+            {
+              "year": 2024,
+              "value": 19.4
+            }
+          ]
+        },
+        {
+          "name": "LED Technology",
+          "impactDetail": "50B+ LED bulbs worldwide",
+          "value": 50000,
+          "economicValue": 88.2,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 65.3
+            },
+            {
+              "year": 2019,
+              "value": 71.5
+            },
+            {
+              "year": 2020,
+              "value": 76.8
+            },
+            {
+              "year": 2021,
+              "value": 81.2
+            },
+            {
+              "year": 2022,
+              "value": 84.9
+            },
+            {
+              "year": 2023,
+              "value": 88.2
+            },
+            {
+              "year": 2024,
+              "value": 93.1
+            }
+          ]
+        },
+        {
+          "name": "Cordless Tools",
+          "impactDetail": "400M tools sold",
+          "value": 400,
+          "economicValue": 32.5,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 24.8
+            },
+            {
+              "year": 2019,
+              "value": 26.9
+            },
+            {
+              "year": 2020,
+              "value": 28.5
+            },
+            {
+              "year": 2021,
+              "value": 30.1
+            },
+            {
+              "year": 2022,
+              "value": 31.3
+            },
+            {
+              "year": 2023,
+              "value": 32.5
+            },
+            {
+              "year": 2024,
+              "value": 34.2
+            }
+          ]
+        },
+        {
+          "name": "Shoe Insoles",
+          "impactDetail": "500M pairs sold",
+          "value": 500,
+          "economicValue": 8.2,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 5.8
+            },
+            {
+              "year": 2019,
+              "value": 6.4
+            },
+            {
+              "year": 2020,
+              "value": 6.9
+            },
+            {
+              "year": 2021,
+              "value": 7.4
+            },
+            {
+              "year": 2022,
+              "value": 7.8
+            },
+            {
+              "year": 2023,
+              "value": 8.2
+            },
+            {
+              "year": 2024,
+              "value": 8.7
+            }
+          ]
+        },
+        {
+          "name": "Portable Vacuums",
+          "impactDetail": "250M units sold",
+          "value": 250,
+          "economicValue": 15.3,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 11.2
+            },
+            {
+              "year": 2019,
+              "value": 12.3
+            },
+            {
+              "year": 2020,
+              "value": 13.1
+            },
+            {
+              "year": 2021,
+              "value": 13.9
+            },
+            {
+              "year": 2022,
+              "value": 14.6
+            },
+            {
+              "year": 2023,
+              "value": 15.3
+            },
+            {
+              "year": 2024,
+              "value": 16.2
+            }
+          ]
+        },
+        {
+          "name": "Baby Food",
+          "impactDetail": "350M infants benefited",
+          "value": 350,
+          "economicValue": 22.5,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 16.8
+            },
+            {
+              "year": 2019,
+              "value": 18.2
+            },
+            {
+              "year": 2020,
+              "value": 19.5
+            },
+            {
+              "year": 2021,
+              "value": 20.6
+            },
+            {
+              "year": 2022,
+              "value": 21.6
+            },
+            {
+              "year": 2023,
+              "value": 22.5
+            },
+            {
+              "year": 2024,
+              "value": 23.8
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Food",
+      "color": "#b0e0e6",
+      "children": [
+        {
+          "name": "Freeze Food",
+          "impactDetail": "100M+ people using annually",
+          "value": 100,
+          "economicValue": 12.5,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 8.5
+            },
+            {
+              "year": 2019,
+              "value": 9.5
+            },
+            {
+              "year": 2020,
+              "value": 10.2
+            },
+            {
+              "year": 2021,
+              "value": 11
+            },
+            {
+              "year": 2022,
+              "value": 11.8
+            },
+            {
+              "year": 2023,
+              "value": 12.5
+            },
+            {
+              "year": 2024,
+              "value": 13.4
+            }
+          ]
+        },
+        {
+          "name": "Food Safety Testing",
+          "impactDetail": "5 Billion people protected",
+          "value": 5000,
+          "economicValue": 35.8,
+          "livesSaved": 1200000,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 28.5
+            },
+            {
+              "year": 2019,
+              "value": 30.2
+            },
+            {
+              "year": 2020,
+              "value": 31.8
+            },
+            {
+              "year": 2021,
+              "value": 33.2
+            },
+            {
+              "year": 2022,
+              "value": 34.5
+            },
+            {
+              "year": 2023,
+              "value": 35.8
+            },
+            {
+              "year": 2024,
+              "value": 37.5
+            }
+          ]
+        },
+        {
+          "name": "Food Packaging",
+          "impactDetail": "7 Billion people",
+          "value": 7000,
+          "economicValue": 42.3,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 35.2
+            },
+            {
+              "year": 2019,
+              "value": 37.1
+            },
+            {
+              "year": 2020,
+              "value": 38.8
+            },
+            {
+              "year": 2021,
+              "value": 40.2
+            },
+            {
+              "year": 2022,
+              "value": 41.3
+            },
+            {
+              "year": 2023,
+              "value": 42.3
+            },
+            {
+              "year": 2024,
+              "value": 43.8
+            }
+          ]
+        },
+        {
+          "name": "Vertical Farming",
+          "impactDetail": "50M people served",
+          "value": 50,
+          "economicValue": 8.5,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 3.2
+            },
+            {
+              "year": 2019,
+              "value": 4.5
+            },
+            {
+              "year": 2020,
+              "value": 5.6
+            },
+            {
+              "year": 2021,
+              "value": 6.8
+            },
+            {
+              "year": 2022,
+              "value": 7.6
+            },
+            {
+              "year": 2023,
+              "value": 8.5
+            },
+            {
+              "year": 2024,
+              "value": 9.8
+            }
+          ]
+        },
+        {
+          "name": "Supplements",
+          "impactDetail": "2 Billion users",
+          "value": 2000,
+          "economicValue": 28.5,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 21.5
+            },
+            {
+              "year": 2019,
+              "value": 23.2
+            },
+            {
+              "year": 2020,
+              "value": 24.8
+            },
+            {
+              "year": 2021,
+              "value": 26.2
+            },
+            {
+              "year": 2022,
+              "value": 27.3
+            },
+            {
+              "year": 2023,
+              "value": 28.5
+            },
+            {
+              "year": 2024,
+              "value": 30.1
+            }
+          ]
+        },
+        {
+          "name": "Pest-Free Storage",
+          "impactDetail": "300M households",
+          "value": 300,
+          "economicValue": 15.2,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 11.5
+            },
+            {
+              "year": 2019,
+              "value": 12.5
+            },
+            {
+              "year": 2020,
+              "value": 13.3
+            },
+            {
+              "year": 2021,
+              "value": 14
+            },
+            {
+              "year": 2022,
+              "value": 14.6
+            },
+            {
+              "year": 2023,
+              "value": 15.2
+            },
+            {
+              "year": 2024,
+              "value": 16
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Environment",
+      "color": "#add8e6",
+      "children": [
+        {
+          "name": "Solar Panels",
+          "impactDetail": "3 Billion solar panels installed",
+          "value": 3000,
+          "economicValue": 399.4,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 245.5
+            },
+            {
+              "year": 2019,
+              "value": 278.3
+            },
+            {
+              "year": 2020,
+              "value": 312.8
+            },
+            {
+              "year": 2021,
+              "value": 345.2
+            },
+            {
+              "year": 2022,
+              "value": 372.6
+            },
+            {
+              "year": 2023,
+              "value": 399.4
+            },
+            {
+              "year": 2024,
+              "value": 435.8
+            }
+          ]
+        },
+        {
+          "name": "Air Purifiers",
+          "impactDetail": "500 Million units in use",
+          "value": 500,
+          "economicValue": 25.3,
+          "livesSaved": 180000,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 17.5
+            },
+            {
+              "year": 2019,
+              "value": 19.2
+            },
+            {
+              "year": 2020,
+              "value": 21.1
+            },
+            {
+              "year": 2021,
+              "value": 22.8
+            },
+            {
+              "year": 2022,
+              "value": 24.1
+            },
+            {
+              "year": 2023,
+              "value": 25.3
+            },
+            {
+              "year": 2024,
+              "value": 27.1
+            }
+          ]
+        },
+        {
+          "name": "Oil Spill Cleanup",
+          "impactDetail": "5K cleanup operations",
+          "value": 0.005,
+          "economicValue": 8.5,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 6.2
+            },
+            {
+              "year": 2019,
+              "value": 6.8
+            },
+            {
+              "year": 2020,
+              "value": 7.3
+            },
+            {
+              "year": 2021,
+              "value": 7.8
+            },
+            {
+              "year": 2022,
+              "value": 8.1
+            },
+            {
+              "year": 2023,
+              "value": 8.5
+            },
+            {
+              "year": 2024,
+              "value": 9
+            }
+          ]
+        },
+        {
+          "name": "Wind Turbines",
+          "impactDetail": "400M people powered",
+          "value": 400,
+          "economicValue": 125.3,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 95.2
+            },
+            {
+              "year": 2019,
+              "value": 103.5
+            },
+            {
+              "year": 2020,
+              "value": 110.8
+            },
+            {
+              "year": 2021,
+              "value": 116.5
+            },
+            {
+              "year": 2022,
+              "value": 121.2
+            },
+            {
+              "year": 2023,
+              "value": 125.3
+            },
+            {
+              "year": 2024,
+              "value": 131.8
+            }
+          ]
+        },
+        {
+          "name": "Pollution Monitoring",
+          "impactDetail": "6 Billion people monitored",
+          "value": 6000,
+          "economicValue": 18.5,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 12.5
+            },
+            {
+              "year": 2019,
+              "value": 14.1
+            },
+            {
+              "year": 2020,
+              "value": 15.3
+            },
+            {
+              "year": 2021,
+              "value": 16.5
+            },
+            {
+              "year": 2022,
+              "value": 17.5
+            },
+            {
+              "year": 2023,
+              "value": 18.5
+            },
+            {
+              "year": 2024,
+              "value": 19.8
+            }
+          ]
+        },
+        {
+          "name": "Thermal Insulation",
+          "impactDetail": "1 Billion buildings",
+          "value": 1000,
+          "economicValue": 52.8,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 42.5
+            },
+            {
+              "year": 2019,
+              "value": 45.3
+            },
+            {
+              "year": 2020,
+              "value": 47.8
+            },
+            {
+              "year": 2021,
+              "value": 49.5
+            },
+            {
+              "year": 2022,
+              "value": 51.2
+            },
+            {
+              "year": 2023,
+              "value": 52.8
+            },
+            {
+              "year": 2024,
+              "value": 55.1
+            }
+          ]
+        },
+        {
+          "name": "Greenhouse Gas Sensors",
+          "impactDetail": "100M sensors deployed",
+          "value": 100,
+          "economicValue": 12.3,
+          "livesSaved": 0,
+          "yearlyGrowth": [
+            {
+              "year": 2018,
+              "value": 7.5
+            },
+            {
+              "year": 2019,
+              "value": 8.6
+            },
+            {
+              "year": 2020,
+              "value": 9.5
+            },
+            {
+              "year": 2021,
+              "value": 10.5
+            },
+            {
+              "year": 2022,
+              "value": 11.4
+            },
+            {
+              "year": 2023,
+              "value": 12.3
+            },
+            {
+              "year": 2024,
+              "value": 13.5
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
