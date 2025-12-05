@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Initialize all visualizations with Intersection Observer
     initVisualizationsOnScroll();
+    initChoiceButtons();
 
     console.log("✅ Website Ready!");
 });
@@ -26,10 +27,49 @@ document.addEventListener("DOMContentLoaded", () => {
 // ==================== INTERSECTION OBSERVER FOR VIZ ====================
 
 function initVisualizationsOnScroll() {
+    const scrollRoot = document.getElementById('app') || null;
+
     const options = {
-        root: null,
+        root: scrollRoot,          // IMPORTANT: your site scrolls inside #app
         rootMargin: '0px',
-        threshold: 0.1
+        threshold: 0.12
+    };
+
+    const showMissingViz = (containerId, expectedFn) => {
+        const el = document.getElementById(containerId);
+        if (!el) return;
+
+        // Avoid duplicating the message
+        if (el.dataset.vizErrorShown === '1') return;
+        el.dataset.vizErrorShown = '1';
+
+        el.innerHTML = `
+            <div style="
+                max-width: 920px;
+                margin: 0 auto;
+                padding: 16px 18px;
+                border-radius: 14px;
+                border: 1px solid rgba(255,255,255,0.18);
+                background: rgba(15,23,42,0.75);
+                box-shadow: 0 16px 40px rgba(0,0,0,0.55);
+                color: #e5e7eb;
+                font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            ">
+                <div style="font-weight:700; margin-bottom:6px;">⚠️ Visualization not loaded</div>
+                <div style="font-size: 0.95rem; line-height: 1.4; opacity: 0.95;">
+                    Expected <code style="background: rgba(0,0,0,0.35); padding: 2px 6px; border-radius: 8px;">${expectedFn}</code>
+                    but it was <b>undefined</b>. This is almost always a script path/name issue.
+                </div>
+                <div style="font-size:0.9rem; margin-top:10px; opacity:0.9;">
+                    Quick checks:
+                    <ul style="margin:8px 0 0 18px;">
+                        <li>Open DevTools → Console & Network and look for <b>404</b> script errors.</li>
+                        <li>Make sure the file exists at <code>js/…</code> or in the same folder as <code>index.html</code>.</li>
+                        <li>Make sure the function name inside the file matches exactly.</li>
+                    </ul>
+                </div>
+            </div>
+        `;
     };
 
     const observer = new IntersectionObserver((entries) => {
@@ -38,54 +78,63 @@ function initVisualizationsOnScroll() {
                 const vizId = entry.target.id;
                 console.log(`Initializing ${vizId}`);
 
-                // Initialize visualization based on ID
+                // optional: if you have story animation CSS
+                entry.target.classList.add('story-visible');
+
                 switch (vizId) {
                     case 'viz-section-1':
                         if (typeof initManya1 !== 'undefined') initManya1();
+                        else showMissingViz('manya1-viz', 'initManya1()');
                         break;
                     case 'viz-section-2':
                         if (typeof initManya2 !== 'undefined') initManya2();
+                        else showMissingViz('manya2-viz', 'initManya2()');
                         break;
                     case 'viz-section-3':
                         if (typeof initVivek1 !== 'undefined') initVivek1();
+                        else showMissingViz('vivek1-viz', 'initVivek1()');
                         break;
                     case 'viz-section-4':
                         if (typeof initVivek2 !== 'undefined') initVivek2();
+                        else showMissingViz('vivek2-viz', 'initVivek2()');
                         break;
                     case 'viz-section-5':
                         if (typeof initSehas1 !== 'undefined') initSehas1();
+                        else showMissingViz('sehas1-viz', 'initSehas1()');
                         break;
                     case 'viz-section-6':
                         if (typeof initSehas2 !== 'undefined') initSehas2();
+                        else showMissingViz('sehas2-viz', 'initSehas2()');
                         break;
                     case 'viz-section-7':
                         if (typeof initSamyogita1 !== 'undefined') initSamyogita1();
+                        else showMissingViz('samyogita1-viz', 'initSamyogita1()');
                         break;
                     case 'viz-section-8':
                         if (typeof initSamyogita2 !== 'undefined') initSamyogita2();
+                        else showMissingViz('samyogita2-viz', 'initSamyogita2()');
                         break;
                     case 'viz-section-9':
                         if (typeof initRazan1 !== 'undefined') initRazan1();
+                        else showMissingViz('razan1-viz', 'initRazan1()');
                         break;
                     case 'viz-section-10':
                         if (typeof initAryan1 !== 'undefined') initAryan1();
+                        else showMissingViz('aryan1-viz', 'initAryan1()');
                         break;
                 }
 
-                // Stop observing after initialization
                 observer.unobserve(entry.target);
             }
         });
     }, options);
 
-    // Observe all viz sections
     for (let i = 1; i <= 10; i++) {
         const section = document.getElementById(`viz-section-${i}`);
-        if (section) {
-            observer.observe(section);
-        }
+        if (section) observer.observe(section);
     }
 }
+
 
 // ==================== EARTH IMAGE INITIALIZATION ====================
 
@@ -392,6 +441,45 @@ function createDebris(rocketElement, container) {
             debris.remove();
         }
     }, duration * 1000 + 100);
+}
+// ==================== EPILOGUE CHOICE LOGIC ====================
+
+function initChoiceButtons() {
+    const output = document.getElementById("choice-output");
+    if (!output) {
+        return;
+    }
+
+    const buttons = document.querySelectorAll(".choice-button[data-choice]");
+    if (!buttons.length) {
+        return;
+    }
+
+    buttons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const choice = btn.dataset.choice;
+            let message = "";
+
+            switch (choice) {
+                case "earth-first":
+                    message =
+                        "You’re arguing that until climate disasters shrink and basic needs are met, space should slow down and justify every launch like a startup pitching investors.";
+                    break;
+                case "balance":
+                    message =
+                        "You’re taking a portfolio view: protect Earth aggressively while still funding missions that push the frontier and create spillover technologies.";
+                    break;
+                case "space-forward":
+                    message =
+                        "You’re betting that bold exploration and long-term innovation will pay back the planet many times over — as long as we clean up our mess on the way.";
+                    break;
+                default:
+                    message = "";
+            }
+
+            output.textContent = message;
+        });
+    });
 }
 
 // ==================== DATA LOADING ====================

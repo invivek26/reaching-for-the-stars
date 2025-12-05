@@ -438,6 +438,219 @@ body {
         0 0 80px rgba(59, 130, 246, 0.2);
 }
 
+/* ==================== LANDING STORY TEXT ==================== */
+
+#launch-story {
+    position: absolute;
+    left: 50%;
+    bottom: 16vh;
+    transform: translateX(-50%);
+    max-width: 680px;
+    padding: 1.5rem 2rem;
+    text-align: center;
+    background: radial-gradient(circle at top,
+            rgba(15, 23, 42, 0.9) 0%,
+            rgba(15, 23, 42, 0.85) 40%,
+            transparent 100%);
+    border-radius: 1.5rem;
+    border: 1px solid rgba(148, 163, 184, 0.45);
+    box-shadow:
+        0 24px 60px rgba(15, 23, 42, 0.9),
+        0 0 80px rgba(59, 130, 246, 0.4);
+    pointer-events: none;
+    z-index: 6;
+    opacity: 0;
+    transform-origin: center bottom;
+    animation: launch-story-in 1.4s 0.6s ease-out forwards;
+}
+
+.launch-line {
+    color: #e5e7eb;
+    font-size: 0.98rem;
+    line-height: 1.6;
+    margin-bottom: 0.35rem;
+}
+
+.launch-line:last-child {
+    margin-bottom: 0;
+}
+
+.launch-line .emphasis {
+    color: #fbbf24;
+    font-weight: 600;
+}
+
+/* ==================== STORY BLOCKS FOR SECTIONS ==================== */
+
+.story-block {
+    max-width: 960px;
+    margin: 0 auto 2.5rem;
+    text-align: left;
+    background: radial-gradient(circle at top left,
+            rgba(15, 23, 42, 0.95) 0%,
+            rgba(15, 23, 42, 0.9) 45%,
+            rgba(15, 23, 42, 0.85) 100%);
+    border-radius: 1.25rem;
+    padding: 1.5rem 2rem;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    box-shadow:
+        0 20px 45px rgba(0, 0, 0, 0.7),
+        0 0 60px rgba(59, 130, 246, 0.25);
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.story-act-label {
+    font-size: 0.8rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #a5b4fc;
+    margin-bottom: 0.65rem;
+}
+
+.story-line {
+    font-size: 0.98rem;
+    color: #e5e7eb;
+    margin-bottom: 0.4rem;
+    opacity: 0;
+    transform: translateY(4px);
+}
+
+.story-line:last-child {
+    margin-bottom: 0;
+}
+
+/* When section becomes visible via IntersectionObserver */
+.story-visible .story-block {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.story-visible .story-line {
+    animation: story-line-in 0.7s forwards ease-out;
+}
+
+.story-visible .story-line:nth-of-type(1) {
+    animation-delay: 0.05s;
+}
+
+.story-visible .story-line:nth-of-type(2) {
+    animation-delay: 0.18s;
+}
+
+.story-visible .story-line:nth-of-type(3) {
+    animation-delay: 0.32s;
+}
+
+.story-visible .story-line:nth-of-type(4) {
+    animation-delay: 0.46s;
+}
+
+/* ==================== EPILOGUE CHOICE BUTTONS ==================== */
+
+.choice-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.choice-button {
+    border: none;
+    border-radius: 999px;
+    padding: 0.65rem 1.3rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    background: linear-gradient(135deg, #60a5fa, #a855f7);
+    color: #0b1120;
+    box-shadow:
+        0 10px 25px rgba(37, 99, 235, 0.45),
+        0 0 20px rgba(129, 140, 248, 0.4);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+
+.choice-button:hover {
+    transform: translateY(-1px) scale(1.02);
+    box-shadow:
+        0 14px 32px rgba(37, 99, 235, 0.6),
+        0 0 28px rgba(129, 140, 248, 0.55);
+    filter: brightness(1.05);
+}
+
+.choice-button:active {
+    transform: translateY(0) scale(0.99);
+    box-shadow:
+        0 8px 18px rgba(15, 23, 42, 0.9),
+        0 0 12px rgba(37, 99, 235, 0.5);
+}
+
+.story-outcome {
+    margin-top: 0.9rem;
+    font-size: 0.95rem;
+    color: #e5e7eb;
+    min-height: 1.2em;
+    opacity: 0.95;
+}
+
+/* ==================== ANIMATIONS ==================== */
+
+@keyframes launch-story-in {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(18px) scale(0.97);
+    }
+
+    60% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1.01);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1);
+    }
+}
+
+@keyframes story-line-in {
+    0% {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==================== RESPONSIVE TWEAKS FOR STORY ==================== */
+
+@media (max-width: 768px) {
+    #launch-story {
+        bottom: 12vh;
+        padding: 1.25rem 1.5rem;
+        max-width: 90vw;
+    }
+
+    .story-block {
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .choice-buttons {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .choice-button {
+        width: 100%;
+        text-align: center;
+    }
+}
+
 /* ==================== RESPONSIVE ==================== */
 
 @media (max-width: 768px) {
