@@ -1,4 +1,4 @@
-// ==================== SAMYOGITA2: THE DEBRIS PRISON (FIXED WITH VISUAL) ====================
+// ==================== SAMYOGITA2: THE DEBRIS PRISON ====================
 
 function initSamyogita2() {
     const container = document.getElementById('samyogita2-viz');
@@ -6,285 +6,259 @@ function initSamyogita2() {
     container.dataset.initialized = 'true';
 
     container.innerHTML = `
-        <div style="font-family: ui-sans-serif, system-ui; color: #e6f0ff; background: linear-gradient(180deg, #0b1220 0%, #0a0f18 100%); padding: 2rem; border-radius: 12px; min-height: 700px; position: relative;">
-            <div style="text-align: center; margin-bottom: 2rem;">
-                <h3 style="margin: 0 0 6px; font-size: 22px;">The Debris Prison</h3>
-                <p style="margin: 0; color: #8ea1bf; font-size: 14px;">Visualizing space debris accumulation from 2000-2025</p>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: start;">
-                
-                <!-- Stats Panel -->
-                <div style="background: rgba(12,18,30,.55); border: 1px solid rgba(255,255,255,.08); backdrop-filter: blur(8px); padding: 14px 16px; border-radius: 12px;">
-                    <h4 style="margin: 0 0 10px; font-size: 16px; color: #4fc3f7;">Mission Statistics</h4>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                        <div style="margin: 8px 0; font-size: 13px;">
-                            <b>Year:</b> <span id="samyogita2-year-display" style="color: #4fc3f7; font-size: 18px; font-weight: 800;">2000</span>
+        <div style="max-width: 1200px; margin: 0 auto; padding: 22px 16px 26px;">
+            <div style="background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .12); border-radius: 14px; padding: 14px; position: relative; overflow: hidden;">
+                <div style="position: relative; z-index: 2;">
+                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 16px; margin-bottom: 12px;">
+                        <div style="background: rgba(255, 255, 255, .08); border-radius: 10px; padding: 12px;">
+                            <div style="font-size: 11px; color: #b6c0dd; margin-bottom: 4px;">TRACKED OBJECTS</div>
+                            <div style="font-size: 24px; font-weight: 800; color: #eef2ff;" id="sam2-debris">0</div>
                         </div>
-                        <div style="margin: 8px 0; font-size: 13px;">
-                            <b>Debris Objects:</b> <span id="samyogita2-debris-count" style="color: #fbbf24;">0</span>
+                        <div style="background: rgba(255, 255, 255, .08); border-radius: 10px; padding: 12px;">
+                            <div style="font-size: 11px; color: #b6c0dd; margin-bottom: 4px;">FAILED MISSIONS</div>
+                            <div style="font-size: 24px; font-weight: 800; color: #ff6b8a;" id="sam2-failed">0</div>
                         </div>
-                        <div style="margin: 8px 0; font-size: 13px;">
-                            <b>Failed Missions:</b> <span id="samyogita2-failed-count" style="color: #ef4444;">0</span>
+                        <div style="background: rgba(255, 255, 255, .08); border-radius: 10px; padding: 12px;">
+                            <div style="font-size: 11px; color: #b6c0dd; margin-bottom: 4px;">MONEY WASTED</div>
+                            <div style="font-size: 24px; font-weight: 800; color: #ff6b8a;" id="sam2-waste">$0B</div>
                         </div>
-                        <div style="margin: 8px 0; font-size: 13px;">
-                            <b>Money Wasted:</b> $<span id="samyogita2-waste-amount" style="color: #ef4444;">0</span>B
-                        </div>
-                        <div style="margin: 8px 0; font-size: 13px; grid-column: 1 / -1;">
-                            <b>Collision Risk:</b> <span id="samyogita2-risk-level" style="color: #10b981; font-weight: 700;">LOW</span>
+                        <div style="background: rgba(255, 255, 255, .08); border-radius: 10px; padding: 12px;">
+                            <div style="font-size: 11px; color: #b6c0dd; margin-bottom: 4px;">COLLISION RISK</div>
+                            <div style="font-size: 24px; font-weight: 800; color: #10b981;" id="sam2-risk">LOW</div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Controls -->
-                <div style="display: flex; gap: 10px;">
-                    <button id="samyogita2-play" style="background: rgba(79, 195, 247, 0.2); border: 1px solid #4fc3f7; color: #4fc3f7; padding: 10px 20px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: .2s;">▶ Play</button>
-                    <button id="samyogita2-reset" style="background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08); color: #e6f0ff; padding: 10px 20px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: .2s;">↻ Reset</button>
-                </div>
-            </div>
-
-            <!-- Visualization Canvas -->
-            <div style="margin-top: 2rem; background: rgba(12,18,30,.55); border: 1px solid rgba(255,255,255,.08); border-radius: 12px; padding: 2rem; min-height: 500px; position: relative; overflow: hidden;">
-                <svg id="samyogita2-viz-svg" style="width: 100%; height: 500px;"></svg>
                 
-                <!-- Legend -->
-                <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 24px; background: rgba(12,18,30,.8); padding: 12px 24px; border-radius: 8px; border: 1px solid rgba(255,255,255,.08);">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <div style="width: 12px; height: 12px; border-radius: 50%; background: #b96596;"></div>
-                        <span style="color: #8ea1bf; font-size: 12px;">Failed missions</span>
+                <div id="sam2-container" style="width: 100%; height: 500px; position: relative; border-radius: 8px; overflow: hidden; background: radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.6), rgba(0, 0, 0, 0.9));"></div>
+                
+                <div style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); z-index: 1;">
+                    <div style="font-size: 80px; font-weight: 900; color: rgba(200, 220, 255, 0.08); letter-spacing: 2px;" id="sam2-year">2000</div>
+                </div>
+
+                <div style="margin-top: 12px; display: flex; gap: 10px; justify-content: center;">
+                    <button id="sam2-play" style="background: rgba(30, 64, 175, 0.8); border: 2px solid rgba(96, 165, 250, 0.5); color: #fff; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600;">
+                        Play
+                    </button>
+                    <button id="sam2-reset" style="background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .15); color: #eef2ff; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600;">
+                        Reset
+                    </button>
+                </div>
+
+                <div style="display: flex; justify-content: center; gap: 16px; margin-top: 12px; font-size: 12px; color: #b6c0dd;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <div style="width: 10px; height: 10px; border-radius: 50%; background: #b96596;"></div>
+                        Failed mission debris
                     </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <div style="width: 12px; height: 12px; border-radius: 50%; background: #b9993a;"></div>
-                        <span style="color: #8ea1bf; font-size: 12px;">Collision debris</span>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <div style="width: 10px; height: 10px; border-radius: 50%; background: #b9993a;"></div>
+                        Collision shards
                     </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <div style="width: 12px; height: 12px; border-radius: 50%; background: #30b18b;"></div>
-                        <span style="color: #8ea1bf; font-size: 12px;">Operational</span>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <div style="width: 10px; height: 10px; border-radius: 50%; background: #30b18b;"></div>
+                        Operational objects
                     </div>
                 </div>
             </div>
         </div>
     `;
 
-    // Visualization setup
-    const svg = d3.select('#samyogita2-viz-svg');
-    const width = parseInt(svg.style('width'));
-    const height = 500;
-    const centerX = width / 2;
-    const centerY = height / 2;
-    const earthRadius = 80;
-
-    // Clear and setup SVG
-    svg.selectAll('*').remove();
-
-    // Add Earth
-    const earthGroup = svg.append('g').attr('transform', `translate(${centerX},${centerY})`);
-
-    // Earth glow
-    const defs = svg.append('defs');
-    const radialGradient = defs.append('radialGradient')
-        .attr('id', 'earth-glow');
-    radialGradient.append('stop').attr('offset', '0%').attr('stop-color', '#4fc3f7').attr('stop-opacity', 0.3);
-    radialGradient.append('stop').attr('offset', '70%').attr('stop-color', '#1e40af').attr('stop-opacity', 0.1);
-    radialGradient.append('stop').attr('offset', '100%').attr('stop-color', '#0a0f18').attr('stop-opacity', 0);
-
-    earthGroup.append('circle')
-        .attr('r', earthRadius + 30)
-        .attr('fill', 'url(#earth-glow)');
-
-    // Earth body
-    earthGroup.append('circle')
-        .attr('r', earthRadius)
-        .attr('fill', '#1e40af')
-        .attr('stroke', '#4fc3f7')
-        .attr('stroke-width', 2)
-        .attr('opacity', 0.8);
-
-    // Add continents pattern (simple)
-    earthGroup.append('circle')
-        .attr('cx', -20)
-        .attr('cy', -10)
-        .attr('r', 25)
-        .attr('fill', '#103454')
-        .attr('opacity', 0.6);
-
-    earthGroup.append('circle')
-        .attr('cx', 15)
-        .attr('cy', 20)
-        .attr('r', 20)
-        .attr('fill', '#103454')
-        .attr('opacity', 0.6);
-
-    // Debris container
-    const debrisGroup = svg.append('g').attr('transform', `translate(${centerX},${centerY})`);
-
-    // State
-    const START_YEAR = 2000;
-    const END_YEAR = 2025;
-    let currentYear = START_YEAR;
+    // Three.js visualization
+    let scene, camera, renderer, earth, debris = [];
+    let currentYear = 2000;
     let isPlaying = false;
-    let totalDebris = 0;
-    let failedMissions = 0;
-    let wastedMoney = 0;
-    let debrisObjects = [];
+    let totalDebris = 0, failedMissions = 0, wastedMoney = 0;
+    let spaceData = [];
+    const clock = new THREE.Clock();
+    let acc = 0;
+    const YEAR_STEP_S = 0.45;
 
-    // Load data
     d3.csv('data/Global_Space_Exploration_Dataset.csv').then(data => {
-        const spaceData = data
-            .filter(d => d.Year && !isNaN(+d.Year) && +d.Year >= START_YEAR && +d.Year <= END_YEAR)
-            .map(d => ({
-                year: +d.Year,
-                failed: (+d["Success Rate (%)"] < 75),
-                cost: +d["Budget (in Billion $)"] || 0
-            }));
+        spaceData = processSpaceData(data);
+        initThreeJS();
+        setupControls();
+    }).catch(error => {
+        console.error('Error loading samyogita2 data:', error);
+        container.innerHTML = '<p style="color: #ff6b8a; text-align: center; padding: 40px;">Error loading visualization data</p>';
+    });
 
-        function addDebris(type, count) {
-            const colors = {
-                failed: '#b96596',
-                collision: '#b9993a',
-                operational: '#30b18b'
+    function processSpaceData(data) {
+        return data.map(row => {
+            const year = parseInt(row.Year);
+            const status = row.Status || '';
+            const successRate = parseFloat(row['Success Rate (%)']) || 0;
+            const cost = parseFloat(row['Budget (in Billion $)']) || 0;
+            const failed = successRate < 80;
+
+            return { year, failed, cost };
+        }).filter(d => !isNaN(d.year) && d.year >= 2000 && d.year <= 2025);
+    }
+
+    function initThreeJS() {
+        const threeContainer = document.getElementById('sam2-container');
+        const w = threeContainer.clientWidth;
+        const h = threeContainer.clientHeight;
+
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 1000);
+        camera.position.set(0, 0, 20);
+
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setPixelRatio(Math.min(1.5, window.devicePixelRatio));
+        renderer.setSize(w, h);
+        renderer.setClearAlpha(0);
+        threeContainer.appendChild(renderer.domElement);
+
+        // Lighting
+        scene.add(new THREE.HemisphereLight(0x88a7ff, 0x0b0f16, 0.75));
+        const keyLight = new THREE.DirectionalLight(0xffffff, 1.0);
+        keyLight.position.set(10, 8, 12);
+        scene.add(keyLight);
+
+        // Earth
+        const earthGeo = new THREE.SphereGeometry(6, 64, 64);
+        const earthMat = new THREE.MeshLambertMaterial({
+            color: 0x103454,
+            emissive: 0x0a1f3a,
+            emissiveIntensity: 0.15
+        });
+        earth = new THREE.Mesh(earthGeo, earthMat);
+        scene.add(earth);
+
+        clock.start();
+        animate();
+    }
+
+    function addDebris(type, count = 1) {
+        for (let i = 0; i < count; i++) {
+            if (debris.length >= 1500) break;
+
+            let color, size;
+            if (type === 'failed') {
+                color = 0xb96596;
+                size = 0.13;
+            } else if (type === 'collision') {
+                color = 0xb9993a;
+                size = 0.09;
+            } else {
+                color = 0x30b18b;
+                size = 0.10;
+            }
+
+            const geo = new THREE.SphereGeometry(size, 10, 10);
+            const mat = new THREE.MeshLambertMaterial({ color });
+            const sphere = new THREE.Mesh(geo, mat);
+
+            const radius = 6 + 0.9 + Math.random() * 2;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(Math.random() * 2 - 1);
+
+            sphere.userData = {
+                type,
+                speed: 0.003 / (radius - 6 + 1),
+                angle: theta,
+                phi,
+                radius
             };
 
-            for (let i = 0; i < count; i++) {
-                const angle = Math.random() * Math.PI * 2;
-                const distance = earthRadius + 40 + Math.random() * 120;
-                const size = type === 'failed' ? 4 : (type === 'collision' ? 3 : 3.5);
+            sphere.position.x = radius * Math.sin(phi) * Math.cos(theta);
+            sphere.position.y = radius * Math.sin(phi) * Math.sin(theta);
+            sphere.position.z = radius * Math.cos(phi);
 
-                const debris = {
-                    angle: angle,
-                    distance: distance,
-                    speed: 0.01 + Math.random() * 0.02,
-                    size: size,
-                    color: colors[type],
-                    type: type
-                };
-
-                debrisObjects.push(debris);
-
-                debrisGroup.append('circle')
-                    .attr('class', `debris-${debrisObjects.length - 1}`)
-                    .attr('r', size)
-                    .attr('fill', colors[type])
-                    .attr('opacity', 0.8)
-                    .attr('cx', distance * Math.cos(angle))
-                    .attr('cy', distance * Math.sin(angle));
-            }
+            scene.add(sphere);
+            debris.push(sphere);
         }
+    }
 
-        function animateDebris() {
-            debrisObjects.forEach((debris, i) => {
-                debris.angle += debris.speed;
-                const x = debris.distance * Math.cos(debris.angle);
-                const y = debris.distance * Math.sin(debris.angle);
+    function animate() {
+        const dt = clock.getDelta();
+        acc += dt;
 
-                debrisGroup.select(`.debris-${i}`)
-                    .attr('cx', x)
-                    .attr('cy', y);
-            });
-        }
+        earth.rotation.y += 0.00055;
 
-        // Animation loop
-        let animationFrame;
-        function animate() {
-            animateDebris();
-            animationFrame = requestAnimationFrame(animate);
-        }
-        animate();
+        debris.forEach(d => {
+            d.userData.angle += d.userData.speed;
+            d.position.x = d.userData.radius * Math.sin(d.userData.phi) * Math.cos(d.userData.angle);
+            d.position.y = d.userData.radius * Math.sin(d.userData.phi) * Math.sin(d.userData.angle);
+            d.position.z = d.userData.radius * Math.cos(d.userData.phi);
+        });
 
-        function updateYear() {
-            const yearData = spaceData.filter(d => d.year === currentYear);
-
-            yearData.forEach(d => {
-                if (d.failed) {
-                    addDebris('failed', 3);
-                    totalDebris += 3;
-                    failedMissions++;
-                    wastedMoney += d.cost;
+        if (isPlaying) {
+            while (acc >= YEAR_STEP_S) {
+                acc -= YEAR_STEP_S;
+                if (currentYear < 2025) {
+                    currentYear++;
+                    updateYear();
                 } else {
-                    if (Math.random() < 0.5) {
-                        addDebris('operational', 1);
-                        totalDebris += 1;
-                    }
+                    isPlaying = false;
+                    document.getElementById('sam2-play').textContent = 'Done';
+                    break;
                 }
-            });
-
-            // Random collisions
-            if (Math.random() < 0.18 * ((currentYear - START_YEAR) / (END_YEAR - START_YEAR))) {
-                const collisionCount = Math.floor(Math.random() * 10 + 8);
-                addDebris('collision', collisionCount);
-                totalDebris += collisionCount;
             }
-
-            // Update UI
-            document.getElementById('samyogita2-year-display').textContent = currentYear;
-            document.getElementById('samyogita2-debris-count').textContent = totalDebris.toLocaleString();
-            document.getElementById('samyogita2-failed-count').textContent = failedMissions;
-            document.getElementById('samyogita2-waste-amount').textContent = wastedMoney.toFixed(1);
-
-            const riskLevel = totalDebris < 300 ? 'LOW' : (totalDebris < 1100 ? 'MEDIUM' : 'HIGH');
-            const riskColor = totalDebris < 300 ? '#10b981' : (totalDebris < 1100 ? '#fbbf24' : '#ef4444');
-            document.getElementById('samyogita2-risk-level').textContent = riskLevel;
-            document.getElementById('samyogita2-risk-level').style.color = riskColor;
         }
 
-        // Controls
-        let interval;
-        document.getElementById('samyogita2-play').addEventListener('click', function () {
-            if (isPlaying) {
-                clearInterval(interval);
-                isPlaying = false;
-                this.innerHTML = '▶ Play';
-                this.style.background = 'rgba(79, 195, 247, 0.2)';
-            } else {
-                isPlaying = true;
-                this.innerHTML = '⏸ Pause';
-                this.style.background = 'rgba(251, 191, 36, 0.2)';
-                this.style.borderColor = '#fbbf24';
-                this.style.color = '#fbbf24';
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+    }
 
-                interval = setInterval(() => {
-                    if (currentYear < END_YEAR) {
-                        currentYear++;
-                        updateYear();
-                    } else {
-                        clearInterval(interval);
-                        isPlaying = false;
-                        document.getElementById('samyogita2-play').innerHTML = '✓ Done';
-                        document.getElementById('samyogita2-play').style.background = 'rgba(16, 185, 129, 0.2)';
-                        document.getElementById('samyogita2-play').style.borderColor = '#10b981';
-                        document.getElementById('samyogita2-play').style.color = '#10b981';
-                    }
-                }, 300);  // Faster: 300ms per year
+    function updateYear() {
+        document.getElementById('sam2-year').textContent = currentYear;
+
+        const yearRows = spaceData.filter(d => d.year === currentYear);
+        yearRows.forEach(d => {
+            if (d.failed) {
+                addDebris('failed', 3);
+                failedMissions++;
+                wastedMoney += d.cost;
+                totalDebris += 3;
+            } else {
+                if (Math.random() < 0.5) {
+                    addDebris('operational', 1);
+                    totalDebris += 1;
+                }
             }
         });
 
-        document.getElementById('samyogita2-reset').addEventListener('click', () => {
-            clearInterval(interval);
+        const t = (currentYear - 2000) / 25;
+        if (Math.random() < (0.18 * t)) {
+            const n = Math.floor(8 + Math.random() * 11);
+            addDebris('collision', n);
+            totalDebris += n;
+        }
+
+        document.getElementById('sam2-debris').textContent = totalDebris.toLocaleString();
+        document.getElementById('sam2-failed').textContent = failedMissions;
+        document.getElementById('sam2-waste').textContent = '$' + wastedMoney.toFixed(1) + 'B';
+
+        const risk = totalDebris < 300 ? 'LOW' : (totalDebris < 1100 ? 'MEDIUM' : 'HIGH');
+        document.getElementById('sam2-risk').textContent = risk;
+        document.getElementById('sam2-risk').style.color = risk === 'HIGH' ? '#ff6b8a' : (risk === 'MEDIUM' ? '#fbbf24' : '#10b981');
+    }
+
+    function setupControls() {
+        const playBtn = document.getElementById('sam2-play');
+        playBtn.addEventListener('click', () => {
+            isPlaying = !isPlaying;
+            playBtn.textContent = isPlaying ? 'Pause' : 'Play';
+        });
+
+        document.getElementById('sam2-reset').addEventListener('click', () => {
             isPlaying = false;
-            currentYear = START_YEAR;
+            playBtn.textContent = 'Play';
+            acc = 0;
+            currentYear = 2000;
             totalDebris = 0;
             failedMissions = 0;
             wastedMoney = 0;
-            debrisObjects = [];
-            debrisGroup.selectAll('circle').remove();
 
-            const playBtn = document.getElementById('samyogita2-play');
-            playBtn.innerHTML = '▶ Play';
-            playBtn.style.background = 'rgba(79, 195, 247, 0.2)';
-            playBtn.style.borderColor = '#4fc3f7';
-            playBtn.style.color = '#4fc3f7';
+            debris.forEach(d => scene.remove(d));
+            debris = [];
 
-            updateYear();
+            document.getElementById('sam2-year').textContent = '2000';
+            document.getElementById('sam2-debris').textContent = '0';
+            document.getElementById('sam2-failed').textContent = '0';
+            document.getElementById('sam2-waste').textContent = '$0B';
+            document.getElementById('sam2-risk').textContent = 'LOW';
+            document.getElementById('sam2-risk').style.color = '#10b981';
         });
-
-        updateYear();
-    }).catch(error => {
-        console.error('Error loading samyogita2 data:', error);
-        svg.append('text')
-            .attr('x', centerX)
-            .attr('y', centerY)
-            .attr('text-anchor', 'middle')
-            .attr('fill', '#ef4444')
-            .text('Error loading data');
-    });
+    }
 }

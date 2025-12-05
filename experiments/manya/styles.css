@@ -389,6 +389,10 @@ body {
     background: linear-gradient(135deg, #000814 0%, #1a1f4d 50%, #000814 100%);
 }
 
+#viz-section-11 {
+    background: linear-gradient(135deg, #001845 0%, #1e3a5f 50%, #001845 100%);
+}
+
 .viz-container {
     max-width: 1400px;
     width: 100%;
