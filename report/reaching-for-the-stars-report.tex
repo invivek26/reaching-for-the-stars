@@ -1,0 +1,197 @@
+%%
+%% This is the main report file for the "Reaching for the Stars" project
+%%
+\documentclass[sigconf]{acmart}
+
+%% \BibTeX command to typeset BibTeX logo in the docs
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    Bib\TeX}}}
+
+%% Suppress conference information
+\setcopyright{none}
+\acmConference{}{}{}{}
+\acmISBN{}
+\acmDOI{}
+
+%%
+%% end of the preamble, start of the body of the document source.
+\begin{document}
+
+%%
+%% The "title" command has an optional parameter,
+%% allowing the author to define a "short title" to be used in page headers.
+\title{Reaching for the Stars: Can We Afford It?}
+\subtitle{A Dueling Scrollytelling Visual Data Story}
+
+%%
+%% The "author" command and its associated commands are used to define
+%% the authors and their affiliations.
+\author{Manya Mehta}
+\affiliation{
+  \institution{Arizona State University}
+  \city{Tempe}
+  \state{AZ}
+  \country{USA}
+}
+\email{mmehta29@asu.edu}
+
+\author{Sehas}
+\affiliation{
+  \institution{Arizona State University}
+  \city{Tempe}
+  \state{AZ}
+  \country{USA}
+}
+\email{@asu.edu}
+
+\author{Vivek Indlebele Narasimha Prasad}
+\affiliation{
+  \institution{Arizona State University}
+  \city{Tempe}
+  \state{AZ}
+  \country{USA}
+}
+\email{vindlebe@asu.edu}
+
+\author{Samyogita}
+\affiliation{
+  \institution{Arizona State University}
+  \city{Tempe}
+  \state{AZ}
+  \country{USA}
+}
+\email{@asu.edu}
+
+\author{Aryan}
+\affiliation{
+  \institution{Arizona State University}
+  \city{Tempe}
+  \state{AZ}
+  \country{USA}
+}
+\email{@asu.edu}
+
+\author{Rose}
+\affiliation{
+  \institution{Arizona State University}
+  \city{Tempe}
+  \state{AZ}
+  \country{USA}
+}
+\email{@asu.edu}
+
+%%
+%% By default, the full list of authors will be used in the page
+%% headers. Often, this list is too long, and will overlap
+%% other information printed in the page headers. This command allows
+%% the author to define a more concise list
+%% of authors' names for this purpose.
+\renewcommand{\shortauthors}{Manya et al.}
+
+%%
+%% The abstract is a short summary of the work to be presented in the
+%% article.
+\begin{abstract}
+  This paper presents "Reaching for the Stars: Can We Afford It?", a dueling scrollytelling visual data story that explores the debate between space exploration investment and Earth-focused spending priorities. Our project uses 11 datasets and 12+ visualizations to present two contrasting narratives about whether humanity should prioritize space exploration or focus resources on solving Earth's problems. Built using D3.js and modern web technologies, the story guides users through a 5-act structure examining international collaboration, costs, environmental impact, and technological benefits. We include two innovative visualizations: a dual-ranking technology impact chart and a flag-based collaboration network. The project demonstrates how scrollytelling can effectively present complex, controversial topics by allowing users to explore both sides of an important debate before making their own choice.
+\end{abstract}
+
+
+%%
+%% This command processes the author and affiliation and title
+%% information and builds the first part of the formatted document.
+\maketitle
+
+\section{Overview}
+
+Throughout history, humans have always been explorers. We have traveled across land, sailed the oceans, taken to the skies, and now we reach for the stars. Space exploration started before the 2000s when a few pioneering countries began this ambitious journey, gradually spreading this pursuit across the globe. But in our focus on exploring distant worlds, have we forgotten about the one we are living on?
+
+This raises an important question: Is the time, money, resources, and environmental impact of space exploration really worth it? Could we instead improve and take care of our planet rather than searching for a new one?
+
+We chose this topic because it represents a real debate happening in our world today. With limited resources and growing problems on Earth like climate change, poverty, and healthcare needs, people disagree about whether space exploration is a good use of our money and effort. Some believe we should focus on fixing Earth's problems first, while others argue that space exploration brings important benefits and could be key to humanity's long-term survival.
+
+Our project tells two different stories using the same data. One side focuses on saving our home planet, arguing that resources should go to education, healthcare, and fighting climate change. The other side believes our future lies in the stars beyond Earth, emphasizing long-term innovation and expansion. By showing both perspectives fairly, we help users understand the full debate and make their own informed decision.
+
+We decided to implement this as a scrollytelling experience because it allows us to guide users through complex information step by step. Rather than overwhelming them with all the data at once, we can build understanding gradually and show how different pieces of evidence support each viewpoint. Scrollytelling has proven effective for narrative visualization by combining the strengths of interactive visualization with structured storytelling \cite{SatyanariyanaScrollytelling}.
+
+\section{Datasets}
+
+Our project uses 11 different datasets that together provide a complete picture of space exploration, its costs, benefits, and impact. We chose multiple datasets because no single source could capture all aspects of this complex topic.
+
+\textbf{Primary Dataset:} The Global Space Exploration Dataset contains information about 400+ space missions from 2002-2024. This includes which countries launched missions, how much they cost, whether they succeeded or failed, what technology they used, and what environmental impact they had. This dataset forms the backbone of our analysis.
+
+\textbf{Economic Impact Data:} We use specialized JSON files that show how space technologies have helped other industries. This includes medical devices, communication systems, navigation tools, and safety equipment that were originally developed for space but now benefit people on Earth. We track both the economic value and how many lives these technologies have saved.
+
+\textbf{Space Industry Economics:} Our space economy dataset comes from the U.S. Bureau of Economic Analysis and covers 2012-2023. It shows employment numbers, wages, revenue trends, and how much the space sector contributes to the overall economy.
+
+\textbf{Government Spending Data:} We track national space agency budgets over time to understand spending patterns and trends. This helps us compare what different countries invest in space exploration.
+
+\textbf{Earth Disasters Data:} To provide context, we include data about natural disasters and their economic costs \cite{GlobalSpaceData}. This lets us compare how much money is spent on space versus how much damage climate events cause on Earth.
+
+\textbf{Satellite and Debris Data:} We track active satellites and space debris to understand the environmental impact of space activities. This includes collision risks and pollution in space.
+
+\textbf{Mission Analysis Data:} Additional datasets provide details about launch success rates, mission durations, and historical space achievements.
+
+All our data processing happens in the web browser using JavaScript and D3 \cite{BostockD3}. We chose this approach to avoid needing a backend server and to make the project easy to run. We support both CSV and JSON file formats and do real-time calculations as users interact with the visualizations. We also validate the data and handle missing or incorrect information gracefully.
+
+\section{Narrative}
+
+Our story follows a 5-act structure that takes users on a journey through the space exploration debate:
+
+\textbf{Act I - The Great Collaboration:} We start by showing how space exploration brings countries together. The collaboration network visualization demonstrates international partnerships and how nations work together on space missions, even when they might disagree on other issues.
+
+\textbf{Act II - The Price Tag:} Next, we examine what space exploration costs. We show mission budgets, analyze the most expensive projects, and reveal how much money is lost when missions fail. This act presents the financial argument for focusing resources elsewhere.
+
+\textbf{Act III - The Environmental Bill:} Here we compare spending on space versus climate problems. We show how space activities create debris and pollution, contrasting this with the money needed to address Earth's environmental challenges.
+
+\textbf{Act IV - The Returns:} This act presents the benefits of space exploration. We demonstrate technologies that flow back to Earth, show jobs created by the space industry, and track how missions improve over time through learning and innovation.
+
+\textbf{Epilogue - Your Verdict:} Finally, we let users make their own choice. After seeing both sides of the debate, they can select whether they think we should focus on Earth first, balance both priorities, or push forward with space exploration.
+
+We use several storytelling techniques to keep users engaged. \textbf{Progressive disclosure} means we reveal information step by step as users scroll, preventing information overload. \textbf{Contextual narration} provides text explanations for each chart, helping users understand what they are seeing and why it matters. \textbf{Visual rhetoric} means our charts are designed to support the arguments being made at each step. \textbf{Interactive elements} let users explore the data themselves rather than just passively reading.
+
+Our scrollytelling implementation uses the Intersection Observer API \cite{IntersectionObserver} to detect when users scroll to new sections. This triggers animations and loads new visualizations smoothly. We built upon existing scrollytelling techniques \cite{PuddingScrollytelling} while adapting them for our dual-narrative approach. We also include visual effects like rocket launches and star fields to create an engaging space theme throughout the experience.
+
+\section{Innovative Visualizations}
+
+We created two custom visualizations that go beyond standard chart types:
+
+\textbf{Technology Impact Ranking Visualization (Innovation \#1):} This chart shows technologies that started in space programs but now benefit life on Earth. What makes it innovative is the dual-ranking system with smooth animated transitions. Users can switch between ranking by economic value (how much money the technology generates) or by humanitarian impact (how many lives it has saved). 
+
+When users change the ranking criteria, the bars smoothly animate to their new positions, making it easy to see how the rankings differ. For example, satellite navigation generates huge economic value but medical monitoring devices save more lives. The real-time calculation of impact metrics and the visual encoding of dual criteria in a single interface represents a custom approach to showing complex trade-offs.
+
+\textbf{Collaboration Network with Country Flags (Innovation \#2):} Traditional network diagrams use simple nodes and edges, but our collaboration network uses actual country flag images as the network nodes. The thickness of connections between countries changes based on how much they collaborate on space missions.
+
+This is innovative because it combines geopolitical imagery with network analysis in an interactive force simulation. Users can drag country flags around to explore relationships, and the visual immediately shows which nations work together most frequently. The integration of real-world imagery (flags) with abstract network data creates a more intuitive and engaging way to understand international space collaboration patterns.
+
+Both visualizations demonstrate custom design and implementation using D3.js \cite{D3Documentation}, going beyond what standard charting libraries provide. They solve specific communication challenges in our narrative and provide interactions that enhance user understanding. The smooth animations were implemented using D3's transition system \cite{D3Transitions}.
+
+\section{Discussion}
+
+Building this scrollytelling experience taught us several important lessons. From a technical standpoint, we learned how to balance performance with visual appeal. Loading 12+ visualizations at once would overwhelm most browsers, so we implemented lazy loading where charts only initialize when users scroll to them. We also discovered the importance of cleaning up animations and event listeners to prevent memory leaks.
+
+Working with D3.js showed us both its power and complexity. While D3 gives complete control over visual design, it requires careful planning to manage data binding and transitions smoothly. We learned to structure our code modularly, with each visualization in its own file, making the project easier to maintain and debug.
+
+From a design perspective, presenting opposing viewpoints fairly was challenging. We had to ensure that neither side of the debate appeared favored by our choice of visualizations or narrative flow. We addressed this by using the same datasets for both perspectives and by structuring the story to alternate between arguments rather than presenting one side first.
+
+The user choice mechanism in our epilogue proved important for engagement. Rather than telling users what to think, we let them make their own decision after seeing the evidence. This approach respects user intelligence and creates a more meaningful experience.
+
+If we could improve the project further, we would add real-time data integration to show current space missions and spending. We would also enhance the mobile experience with touch-optimized interactions and consider adding more nuanced viewpoints beyond just "Earth vs. Space." The debate is complex, and additional perspectives like "focus on both but differently" could enrich the discussion.
+
+Another improvement would be adding accessibility features like screen reader support and keyboard navigation. Data visualization should be inclusive, and our current implementation could better serve users with different abilities.
+
+Finally, we would like to add more interactive elements that let users explore "what if" scenarios. For example, users could adjust space budgets and see how that might affect Earth-focused spending, or explore how different technology investments might change the cost-benefit analysis.
+
+Despite these potential improvements, our project successfully demonstrates how scrollytelling can make complex, controversial topics accessible and engaging \cite{ScrollyVis2022}. By combining clear narration with interactive visualizations, we created an experience that informs rather than preaches, letting users reach their own conclusions about one of the important debates of our time. This approach aligns with best practices for presenting data-driven stories while avoiding bias \cite{Cairo2016}.
+
+\section*{Acknowledgments}
+
+We thank our course instructor for guidance on visualization design principles and scrollytelling techniques. We also acknowledge the data providers who made their space exploration and economic datasets publicly available, enabling this analysis.
+
+%%
+%% The next two lines define the bibliography style to be used, and
+%% the bibliography file.
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
+
+\end{document}
