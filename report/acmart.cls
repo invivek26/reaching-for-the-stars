@@ -2281,9 +2281,9 @@
     \if@ACM@manuscript\else
        \if@ACM@journal@bibstrip\else % Print the conference information
          \if@ACM@engage
-            {\itshape \@acmBooktitle, \@acmYear.}\par
+            {\itshape }\par
          \else
-         {\itshape \acmConference@shortname, \acmConference@venue}\par
+         {\itshape }\par
          \fi
        \fi
     \fi
@@ -3107,12 +3107,9 @@
         \shorttitle\quad\textbullet\quad\@acmArticlePage\ACM@linecountR}%
       \if@ACM@nonacm\else
         \if@ACM@journal@bibstrip
-          \fancyfoot[RO,LE]{\footnotesize \@journalNameShort,
-            Vol. \@acmVolume, No.~\@acmNumber, Article \@acmArticle.
-            Publication date: \@acmPubDate.}%
+          \fancyfoot[RO,LE]{}%
         \else
-          \fancyfoot[RO,LE]{\footnotesize \acmConference@shortname,
-            \acmConference@date, \acmConference@venue.}%
+          \fancyfoot[RO,LE]{}%
          \fi
       \fi
     \else % Proceedings
@@ -3130,12 +3127,8 @@
             EngageCSEdu. \ifx\@acmDOI\@empty\else\@formatdoi{\@acmDOI}\fi
             \ACM@linecountR}%
         \else
-          \fancyhead[LE]{\ACM@linecountL\@headfootfont\footnotesize
-            \acmConference@shortname,
-            \acmConference@date, \acmConference@venue}%
-          \fancyhead[RO]{\@headfootfont
-            \acmConference@shortname,
-            \acmConference@date, \acmConference@venue\ACM@linecountR}%
+          \fancyhead[LE]{}%
+          \fancyhead[RO]{}%
          \fi
       \fi
     \fi
@@ -3154,12 +3147,8 @@
           EngageCSEdu. \ifx\@acmDOI\@empty\else\@formatdoi{\@acmDOI}\fi
           \ACM@linecountR}%
       \else
-        \fancyhead[LE]{\ACM@linecountL\@headfootfont
-          \acmConference@shortname,
-          \acmConference@date, \acmConference@venue}%
-        \fancyhead[RO]{\@headfootfont
-          \acmConference@shortname,
-          \acmConference@date, \acmConference@venue\ACM@linecountR}%
+        \fancyhead[LE]{}%
+        \fancyhead[RO]{}%
        \fi
     \fi
   \fi
@@ -3224,12 +3213,9 @@
     \or % acmtog
       \if@ACM@nonacm\else%
         \if@ACM@journal@bibstrip
-          \fancyfoot[RO,LE]{\footnotesize \@journalNameShort,
-            Vol. \@acmVolume, No.~\@acmNumber, Article \@acmArticle.
-            Publication date: \@acmPubDate.}%
+          \fancyfoot[RO,LE]{}%
         \else
-          \fancyfoot[RO,LE]{\footnotesize \acmConference@shortname,
-            \acmConference@date, \acmConference@venue.}%
+          \fancyfoot[RO,LE]{}%
          \fi
       \fi%
       \fancyhead[L]{\ACM@linecountL\@acmBadgeL}%

@@ -8,15 +8,26 @@
   \providecommand\BibTeX{{%
     Bib\TeX}}}
 
-%% Suppress conference information
+%% Suppress conference information completely
 \setcopyright{none}
-\acmConference{}{}{}{}
+\acmConference[]{}{}{} 
 \acmISBN{}
 \acmDOI{}
+\acmYear{}
+\copyrightyear{}
+\acmPrice{}
+\acmSubmissionID{}
 
 %%
 %% end of the preamble, start of the body of the document source.
 \begin{document}
+
+%% Clear conference variables to prevent comma display
+\makeatletter
+\def\acmConference@shortname{}
+\def\acmConference@date{} 
+\def\acmConference@venue{}
+\makeatother
 
 %%
 %% The "title" command has an optional parameter,
@@ -101,6 +112,11 @@
 %% This command processes the author and affiliation and title
 %% information and builds the first part of the formatted document.
 \maketitle
+
+%% Override footer after maketitle to remove trailing commas
+\makeatletter
+\fancyfoot[RO,LE]{}  % Clear the footer that contains comma-separated conference info
+\makeatother
 
 \section{Overview}
 
