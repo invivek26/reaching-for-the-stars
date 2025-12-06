@@ -1,4 +1,4 @@
-// ==================== CONFIGURATION ====================
+
 
 const CONFIG = {
     USE_REAL_SHUTTLE: true,
@@ -6,11 +6,8 @@ const CONFIG = {
     DEBRIS_INTERVAL: 60,
 };
 
-// ==================== INITIALIZATION ====================
 
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("🚀 Space Exploration Website Loading...");
-
     initStars();
     initExhaust();
     initEarthImage();
@@ -20,11 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Initialize all visualizations with Intersection Observer
     initVisualizationsOnScroll();
     initChoiceButtons();
-
-    console.log("✅ Website Ready!");
 });
 
-// ==================== INTERSECTION OBSERVER FOR VIZ ====================
 
 function initVisualizationsOnScroll() {
     const scrollRoot = document.getElementById('app') || null;
@@ -76,7 +70,6 @@ function initVisualizationsOnScroll() {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 const vizId = entry.target.id;
-                console.log(`Initializing ${vizId}`);
 
                 // optional: if you have story animation CSS
                 entry.target.classList.add('story-visible');
@@ -144,7 +137,6 @@ function initVisualizationsOnScroll() {
 }
 
 
-// ==================== EARTH IMAGE INITIALIZATION ====================
 
 function initEarthImage() {
     const earthImg = document.getElementById("earth-img");
@@ -154,7 +146,6 @@ function initEarthImage() {
     }
 
     earthImg.onload = () => {
-        console.log("✅ Earth image loaded successfully");
         earthImg.style.display = "block";
     };
 
@@ -164,12 +155,10 @@ function initEarthImage() {
     };
 
     if (earthImg.complete && earthImg.naturalHeight > 0) {
-        console.log("✅ Earth image already loaded");
         earthImg.style.display = "block";
     }
 }
 
-// ==================== ROCKET IMAGE TOGGLE ====================
 
 function initRocketImage() {
     const rocketImg = document.getElementById("rocket-img");
@@ -182,7 +171,6 @@ function initRocketImage() {
 
     if (CONFIG.USE_REAL_SHUTTLE) {
         rocketImg.onload = () => {
-            console.log("✅ Shuttle image loaded successfully");
             rocketImg.style.display = "block";
             rocketSvg.style.display = "none";
         };
@@ -202,7 +190,6 @@ function initRocketImage() {
     }
 }
 
-// ==================== STAR FIELD ====================
 
 function initStars() {
     const starsContainer = document.getElementById("stars");
@@ -239,10 +226,8 @@ function initStars() {
         starsContainer.appendChild(star);
     }
 
-    console.log(`✨ Created ${CONFIG.NUM_STARS} stars`);
 }
 
-// ==================== EXHAUST FLAMES ====================
 
 function initExhaust() {
     const exhaustContainer = document.getElementById("exhaust-container");
@@ -366,7 +351,6 @@ function initScrollAnimation() {
     app.addEventListener("scroll", onScroll);
     update();
 
-    console.log("🎬 Scroll animation initialized");
 }
 
 function startDebrisGeneration(rocket, container, scrollProgress) {
@@ -395,7 +379,6 @@ function stopDebrisGeneration() {
     }
 }
 
-// ==================== DEBRIS GENERATION ====================
 
 function createDebris(rocketElement, container) {
     if (!rocketElement || !container) return;
@@ -450,7 +433,6 @@ function createDebris(rocketElement, container) {
         }
     }, duration * 1000 + 100);
 }
-// ==================== EPILOGUE CHOICE LOGIC ====================
 
 function initChoiceButtons() {
     const output = document.getElementById("choice-output");
@@ -488,36 +470,4 @@ function initChoiceButtons() {
             output.textContent = message;
         });
     });
-}
-
-// ==================== DATA LOADING ====================
-
-async function loadData(filepath) {
-    try {
-        const response = await fetch(filepath);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        console.log(`✅ Loaded data from ${filepath}`);
-        return data;
-    } catch (error) {
-        console.error(`❌ Error loading data from ${filepath}:`, error);
-        return null;
-    }
-}
-
-async function loadCSV(filepath) {
-    try {
-        const response = await fetch(filepath);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const text = await response.text();
-        console.log(`✅ Loaded CSV from ${filepath}`);
-        return text;
-    } catch (error) {
-        console.error(`❌ Error loading CSV from ${filepath}:`, error);
-        return null;
-    }
 }

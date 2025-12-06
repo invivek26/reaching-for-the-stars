@@ -11,19 +11,18 @@
 
 <body>
     <div id="app">
-        <!-- Landing Section -->
         <section id="landing" class="section">
             <div id="stars" aria-hidden="true"></div>
             <div id="debris-container" aria-hidden="true"></div>
             <div id="earth-container" aria-hidden="true">
                 <div id="earth">
-                    <img id="earth-img" src="./assets/earth8.png" alt="" loading="eager" decoding="async"
+                    <img id="earth-img" src="./assets/earth.png" alt="" loading="eager" decoding="async"
                         onerror="this.style.display='none'" />
                 </div>
             </div>
             <div id="rocket" aria-hidden="true">
                 <div class="rocket-visual">
-                    <img id="rocket-img" src="./assets/rocket1.webp" alt="" onerror="this.style.display='none'" />
+                    <img id="rocket-img" src="./assets/rocket.webp" alt="" onerror="this.style.display='none'" />
                     <svg id="rocket-svg" viewBox="0 0 120 240" xmlns="http://www.w3.org/2000/svg" role="img"
                         aria-label="Rocket">
                         <defs>
@@ -78,12 +77,10 @@
                 <h1>SPACE EXPLORATION</h1>
                 <div class="divider"></div>
 
-                <!-- Short caption under the title -->
                 <p class="hero-tagline">
                     Scroll through the story to watch the rocket launch and see how space pays Earth back.
                 </p>
 
-                <!-- Scroll hint with jump animation -->
                 <div class="scroll-hint">
                     <span class="scroll-word">scroll to launch</span>
                     <span class="scroll-arrow">↓</span>
@@ -91,7 +88,6 @@
             </div>
 
 
-            <!-- Prologue Story Text -->
 
         </section>
 
@@ -396,28 +392,27 @@
 
     </div>
 
-    <!-- D3.js and other libraries -->
+    <!-- Libraries -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/d3-sankey@0.12"></script>
     <script src="https://unpkg.com/d3-simple-slider"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 
-    <!-- Visualization modules (tries /js first, then same-folder fallback) -->
-    <script src="js/manya1.js" onerror="this.onerror=null;this.src='./manya1.js'"></script>
-    <script src="js/manya2.js" onerror="this.onerror=null;this.src='./manya2.js'"></script>
-    <script src="js/vivek1.js" onerror="this.onerror=null;this.src='./vivek1.js'"></script>
-    <script src="js/vivek2.js" onerror="this.onerror=null;this.src='./vivek2.js'"></script>
-    <script src="js/sehas1.js" onerror="this.onerror=null;this.src='./sehas1.js'"></script>
-    <script src="js/sehas2.js" onerror="this.onerror=null;this.src='./sehas2.js'"></script>
-    <script src="js/samyogita1.js" onerror="this.onerror=null;this.src='./samyogita1.js'"></script>
-    <script src="js/samyogita2.js" onerror="this.onerror=null;this.src='./samyogita2.js'"></script>
-    <script src="js/razan1.js" onerror="this.onerror=null;this.src='./razan1.js'"></script>
-    <script src="js/razan2.js" onerror="this.onerror=null;this.src='./razan2.js'"></script>
-    <script src="js/aryan1.js" onerror="this.onerror=null;this.src='./aryan1.js'"></script>
-    <script src="js/aryan2.js" onerror="this.onerror=null;this.src='./aryan2.js'"></script>
+    <!-- Visualization modules -->
+    <script src="js/manya1.js"></script>
+    <script src="js/manya2.js"></script>
+    <script src="js/vivek1.js"></script>
+    <script src="js/vivek2.js"></script>
+    <script src="js/sehas1.js"></script>
+    <script src="js/sehas2.js"></script>
+    <script src="js/samyogita1.js"></script>
+    <script src="js/samyogita2.js"></script>
+    <script src="js/razan1.js"></script>
+    <script src="js/razan2.js"></script>
+    <script src="js/aryan1.js"></script>
+    <script src="js/aryan2.js"></script>
 
-    <!-- Main app script -->
     <script src="app.js"></script>
 
 </body>
