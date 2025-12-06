@@ -1,196 +1,363 @@
-// ==================== SAMYOGITA2: THE DEBRIS PRISON ====================
-
 function initSamyogita2() {
     const container = document.getElementById('samyogita2-viz');
     if (!container || container.dataset.initialized) return;
     container.dataset.initialized = 'true';
 
     container.innerHTML = `
-        <div style="max-width: 1200px; margin: 0 auto; padding: 22px 16px 26px;">
-            <div style="background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .12); border-radius: 14px; padding: 14px; position: relative; overflow: hidden;">
-                <div style="position: relative; z-index: 2;">
-                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 16px; margin-bottom: 12px;">
-                        <div style="background: rgba(255, 255, 255, .08); border-radius: 10px; padding: 12px;">
-                            <div style="font-size: 11px; color: #b6c0dd; margin-bottom: 4px;">TRACKED OBJECTS</div>
-                            <div style="font-size: 24px; font-weight: 800; color: #eef2ff;" id="sam2-debris">0</div>
-                        </div>
-                        <div style="background: rgba(255, 255, 255, .08); border-radius: 10px; padding: 12px;">
-                            <div style="font-size: 11px; color: #b6c0dd; margin-bottom: 4px;">FAILED MISSIONS</div>
-                            <div style="font-size: 24px; font-weight: 800; color: #ff6b8a;" id="sam2-failed">0</div>
-                        </div>
-                        <div style="background: rgba(255, 255, 255, .08); border-radius: 10px; padding: 12px;">
-                            <div style="font-size: 11px; color: #b6c0dd; margin-bottom: 4px;">MONEY WASTED</div>
-                            <div style="font-size: 24px; font-weight: 800; color: #ff6b8a;" id="sam2-waste">$0B</div>
-                        </div>
-                        <div style="background: rgba(255, 255, 255, .08); border-radius: 10px; padding: 12px;">
-                            <div style="font-size: 11px; color: #b6c0dd; margin-bottom: 4px;">COLLISION RISK</div>
-                            <div style="font-size: 24px; font-weight: 800; color: #10b981;" id="sam2-risk">LOW</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="sam2-container" style="width: 100%; height: 500px; position: relative; border-radius: 8px; overflow: hidden; background: radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.6), rgba(0, 0, 0, 0.9));"></div>
-                
-                <div style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); z-index: 1;">
-                    <div style="font-size: 80px; font-weight: 900; color: rgba(200, 220, 255, 0.08); letter-spacing: 2px;" id="sam2-year">2000</div>
-                </div>
+        <div id="debris-container-viz" style="position:relative; width:100%; height:800px; background:#0a0f18;">
+            <div id="debris-canvas-container" style="position:absolute; inset:0; width:100%; height:100%;"></div>
+            
+            <div id="debris-top-progress" style="position:absolute; top:10px; left:16px; right:16px; height:6px; z-index:3; background:rgba(255,255,255,.09); border-radius:999px; overflow:hidden; border:1px solid rgba(255,255,255,.06)">
+                <div class="fill" id="debris-topProgressFill" style="height:100%; width:0%; background:linear-gradient(90deg,#00d4ff,#5c8aff); box-shadow:0 0 12px rgba(92,138,255,.45)"></div>
+            </div>
 
-                <div style="margin-top: 12px; display: flex; gap: 10px; justify-content: center;">
-                    <button id="sam2-play" style="background: rgba(30, 64, 175, 0.8); border: 2px solid rgba(96, 165, 250, 0.5); color: #fff; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600;">
-                        Play
-                    </button>
-                    <button id="sam2-reset" style="background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .15); color: #eef2ff; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600;">
-                        Reset
-                    </button>
+            <div id="debris-info" style="position:absolute; top:24px; left:18px; z-index:2; background:rgba(12,18,30,.55); border:1px solid rgba(255,255,255,.08); backdrop-filter:saturate(1.1) blur(8px); padding:14px 16px; width:320px; border-radius:12px;">
+                <h3 style="margin:0 0 6px; font-size:22px; color:#fff">The Debris Prison</h3>
+                <div class="stat" style="margin:8px 0; font-size:14px; color:#fff">
+                    Tracked Objects: <b id="debris-debris-count">0</b>
                 </div>
+                <div class="stat" id="debris-stat-failed" style="margin:8px 0; font-size:14px; color:#fff; display:none">
+                    Failed Missions: <b id="debris-failed-count">0</b>
+                </div>
+                <div class="stat" id="debris-stat-spent" style="margin:8px 0; font-size:14px; color:#fff; display:none">
+                    Money Spent: <b>$<span id="debris-spent-amount">0</span>B</b>
+                </div>
+                <div class="stat" id="debris-stat-waste" style="margin:8px 0; font-size:14px; color:#fff; display:none">
+                    Money Wasted: <b>$<span id="debris-waste-amount">0</span>B</b>
+                </div>
+                <div class="stat" style="margin:8px 0; font-size:14px; color:#fff">
+                    Collision Risk: <b id="debris-risk-level">LOW</b>
+                </div>
+            </div>
 
-                <div style="display: flex; justify-content: center; gap: 16px; margin-top: 12px; font-size: 12px; color: #b6c0dd;">
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <div style="width: 10px; height: 10px; border-radius: 50%; background: #b96596;"></div>
-                        Failed mission debris
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <div style="width: 10px; height: 10px; border-radius: 50%; background: #b9993a;"></div>
-                        Collision shards
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <div style="width: 10px; height: 10px; border-radius: 50%; background: #30b18b;"></div>
-                        Operational objects
-                    </div>
+            <div id="debris-year-display" style="position:absolute; right:32px; top:50%; transform:translateY(-50%); font-weight:800; font-size:120px; letter-spacing:2px; color:rgba(200,220,255,.05); z-index:1; user-select:none">2000</div>
+
+            <div id="debris-controls" style="position:absolute; bottom:22px; left:50%; transform:translateX(-50%); z-index:2; display:flex; gap:10px">
+                <button id="debris-play-btn" style="background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08); color:#e6f0ff; padding:10px 18px; font-weight:600; border-radius:12px; cursor:pointer; transition:.2s ease">Play</button>
+                <button id="debris-reset-btn" style="background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08); color:#e6f0ff; padding:10px 18px; font-weight:600; border-radius:12px; cursor:pointer; transition:.2s ease">Reset</button>
+            </div>
+
+            <div class="legend" style="position:absolute; left:0; right:0; bottom:64px; z-index:2; display:flex; justify-content:center; gap:18px; color:#8ea1bf; font-size:13px; pointer-events:none;">
+                <div class="legend-item" id="debris-legend-failed" style="display:none; align-items:center; gap:8px">
+                    <span class="legend-dot" style="width:10px; height:10px; border-radius:50%; background:#b96596; box-shadow:0 0 0 1px rgba(255,255,255,.12)"></span> 
+                    Failed mission debris
+                </div>
+                <div class="legend-item" style="display:inline-flex; align-items:center; gap:8px">
+                    <span class="legend-dot" style="width:10px; height:10px; border-radius:50%; background:#b9993a; box-shadow:0 0 0 1px rgba(255,255,255,.12)"></span> 
+                    Collision shards
+                </div>
+                <div class="legend-item" style="display:inline-flex; align-items:center; gap:8px">
+                    <span class="legend-dot" style="width:10px; height:10px; border-radius:50%; background:#30b18b; box-shadow:0 0 0 1px rgba(255,255,255,.12)"></span> 
+                    Operational objects
                 </div>
             </div>
         </div>
     `;
 
-    // Three.js visualization
-    let scene, camera, renderer, earth, debris = [];
-    let currentYear = 2000;
+    const config = {
+        failedDebrisMultiplier: 3,
+        successDebrisMultiplier: 0.5,
+        collisionBaseRate: 0.18,
+        collisionClusterMin: 8,
+        collisionClusterMax: 18,
+        sizes: { operational: 0.10, failed: 0.13, collision: 0.09 },
+        startYear: 2000,
+        endYear: 2025,
+        yearStepSeconds: 1.2,
+        maxDebris: 1800,
+        minDistance: 0.25,
+        spacingSample: 600,
+        devicePixelRatio: Math.min(1.75, window.devicePixelRatio || 1)
+    };
+
+    let scene, camera, renderer, earth, rimGlow, stars;
+    let debris = [];
+    let currentYear = config.startYear;
     let isPlaying = false;
-    let totalDebris = 0, failedMissions = 0, wastedMoney = 0;
-    let spaceData = [];
+    let stats = { totalDebris: 0, failedMissions: 0, wastedMoney: 0, spentMoney: 0 };
+    
     const clock = new THREE.Clock();
-    let acc = 0;
-    const YEAR_STEP_S = 0.45;
+    let accumulator = 0;
+    let spaceData = [];
+    const recentPositions = [];
 
-    d3.csv('data/Global_Space_Exploration_Dataset.csv').then(data => {
-        spaceData = processSpaceData(data);
-        initThreeJS();
-        setupControls();
-    }).catch(error => {
-        console.error('Error loading samyogita2 data:', error);
-        container.innerHTML = '<p style="color: #ff6b8a; text-align: center; padding: 40px;">Error loading visualization data</p>';
-    });
+    const dateParsers = [
+        d3.utcParse('%Y-%m-%d'),
+        d3.utcParse('%m/%d/%Y'),
+        d3.utcParse('%d-%m-%Y'),
+        d3.utcParse('%Y/%m/%d'),
+        d3.utcParse('%Y')
+    ];
 
-    function processSpaceData(data) {
-        return data.map(row => {
-            const year = parseInt(row.Year);
-            const status = row.Status || '';
-            const successRate = parseFloat(row['Success Rate (%)']) || 0;
-            const cost = parseFloat(row['Budget (in Billion $)']) || 0;
-            const failed = successRate < 80;
-
-            return { year, failed, cost };
-        }).filter(d => !isNaN(d.year) && d.year >= 2000 && d.year <= 2025);
+    function parseDateFlexible(dateString) {
+        if (!dateString) return null;
+        
+        const trimmed = String(dateString).trim();
+        for (const parser of dateParsers) {
+            const parsed = parser(trimmed);
+            if (parsed) return parsed;
+        }
+        
+        const fallback = new Date(trimmed);
+        return isNaN(+fallback) ? null : fallback;
     }
 
-    function initThreeJS() {
-        const threeContainer = document.getElementById('sam2-container');
-        const w = threeContainer.clientWidth;
-        const h = threeContainer.clientHeight;
+    async function loadSpaceData() {
+        const response = await fetch('data/Space_Corrected.csv', { cache: 'no-store' });
+        if (!response.ok) throw new Error('Could not fetch Space_Corrected.csv');
+        
+        const text = await response.text();
+        if (!text || !text.trim()) throw new Error('Empty Space_Corrected.csv');
+        
+        const rows = d3.csvParse(text);
 
-        scene = new THREE.Scene();
-        camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 1000);
-        camera.position.set(0, 0, 20);
+        spaceData = rows.map(row => {
+            const date = parseDateFlexible(row.Datum);
+            const status = (row['Status Mission'] || '').trim().toLowerCase();
+            const failed = status.includes('failure') || status.includes('partial failure');
 
-        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setPixelRatio(Math.min(1.5, window.devicePixelRatio));
-        renderer.setSize(w, h);
-        renderer.setClearAlpha(0);
-        threeContainer.appendChild(renderer.domElement);
+            let costInBillions = 0;
+            const rocketCost = row.Rocket || row[' Rocket'];
+            if (rocketCost) {
+                const cleaned = String(rocketCost).replace(/,/g, '').trim();
+                const millions = parseFloat(cleaned);
+                if (!isNaN(millions) && millions > 0) {
+                    costInBillions = millions / 1000;
+                }
+            }
 
-        // Lighting
-        scene.add(new THREE.HemisphereLight(0x88a7ff, 0x0b0f16, 0.75));
-        const keyLight = new THREE.DirectionalLight(0xffffff, 1.0);
-        keyLight.position.set(10, 8, 12);
-        scene.add(keyLight);
+            return {
+                date,
+                year: date ? date.getUTCFullYear() : NaN,
+                failed,
+                cost: costInBillions
+            };
+        })
+        .filter(d => d.date && !isNaN(d.year) && d.year >= config.startYear && d.year <= config.endYear)
+        .sort((a, b) => a.date - b.date);
 
-        // Earth
-        const earthGeo = new THREE.SphereGeometry(6, 64, 64);
-        const earthMat = new THREE.MeshLambertMaterial({
-            color: 0x103454,
-            emissive: 0x0a1f3a,
-            emissiveIntensity: 0.15
-        });
-        earth = new THREE.Mesh(earthGeo, earthMat);
-        scene.add(earth);
+        console.log(`Loaded ${spaceData.length} missions from ${config.startYear} to ${config.endYear}`);
+        console.log(`Total cost: $${d3.sum(spaceData, d => d.cost).toFixed(1)}B`);
+        console.log(`Failed missions: ${spaceData.filter(d => d.failed).length}`);
+    }
 
-        clock.start();
-        animate();
+    function initializeScene() {
+        const containerEl = document.getElementById('debris-canvas-container');
+        if (!containerEl) {
+            console.error('Canvas container not found');
+            return;
+        }
+
+        setTimeout(() => {
+            const rect = containerEl.getBoundingClientRect();
+            console.log('Canvas dimensions:', rect.width, 'x', rect.height);
+
+            if (rect.width === 0 || rect.height === 0) {
+                console.error('Container has no dimensions');
+                return;
+            }
+
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(60, rect.width / rect.height, 0.1, 1000);
+            camera.position.set(0, 0, 20);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setPixelRatio(config.devicePixelRatio);
+            renderer.setSize(rect.width, rect.height);
+            renderer.setClearAlpha(0);
+            containerEl.appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.HemisphereLight(0x88a7ff, 0x0b0f16, 0.75);
+            scene.add(ambientLight);
+
+            const keyLight = new THREE.DirectionalLight(0xffffff, 1.0);
+            keyLight.position.set(10, 8, 12);
+            scene.add(keyLight);
+
+            const fillLight = new THREE.DirectionalLight(0x3aa0ff, 0.55);
+            fillLight.position.set(-8, -6, 10);
+            scene.add(fillLight);
+
+            const earthGeometry = new THREE.SphereGeometry(6, 64, 64);
+            const earthMaterial = new THREE.MeshLambertMaterial({
+                color: 0x103454,
+                emissive: 0x0a1f3a,
+                emissiveIntensity: 0.15
+            });
+            earth = new THREE.Mesh(earthGeometry, earthMaterial);
+            scene.add(earth);
+
+            const rimGeometry = new THREE.SphereGeometry(6.2, 64, 64);
+            const rimMaterial = new THREE.ShaderMaterial({
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false,
+                uniforms: { color: { value: new THREE.Color(0x2dd6ff) } },
+                vertexShader: `
+                    varying vec3 vN;
+                    varying vec3 vW;
+                    void main() {
+                        vN = normalize(normalMatrix * normal);
+                        vec4 wp = modelMatrix * vec4(position, 1.0);
+                        vW = wp.xyz;
+                        gl_Position = projectionMatrix * viewMatrix * wp;
+                    }
+                `,
+                fragmentShader: `
+                    uniform vec3 color;
+                    varying vec3 vN;
+                    varying vec3 vW;
+                    void main() {
+                        vec3 V = normalize(cameraPosition - vW);
+                        float f = pow(1.0 - max(dot(normalize(vN), V), 0.0), 3.0);
+                        gl_FragColor = vec4(color, f * 0.55);
+                    }
+                `
+            });
+            rimGlow = new THREE.Mesh(rimGeometry, rimMaterial);
+            scene.add(rimGlow);
+
+            const starGeometry = new THREE.BufferGeometry();
+            const starVertices = [];
+            for (let i = 0; i < 1200; i++) {
+                starVertices.push(
+                    (Math.random() - 0.5) * 420,
+                    (Math.random() - 0.5) * 420,
+                    (Math.random() - 0.5) * 420
+                );
+            }
+            starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+            
+            const starMaterial = new THREE.PointsMaterial({
+                color: 0x7f92d6,
+                size: 0.35,
+                transparent: true,
+                opacity: 0.22
+            });
+            stars = new THREE.Points(starGeometry, starMaterial);
+            scene.add(stars);
+
+            clock.start();
+            animate();
+        }, 100);
+    }
+
+    function tryPlaceDebris(radius, phi, theta) {
+        const x = radius * Math.sin(phi) * Math.cos(theta);
+        const y = radius * Math.sin(phi) * Math.sin(theta);
+        const z = radius * Math.cos(phi);
+
+        const checkStart = Math.max(0, recentPositions.length - config.spacingSample);
+        for (let i = checkStart; i < recentPositions.length; i++) {
+            const [px, py, pz] = recentPositions[i];
+            const dx = x - px, dy = y - py, dz = z - pz;
+            const distanceSquared = dx * dx + dy * dy + dz * dz;
+            
+            if (distanceSquared < config.minDistance * config.minDistance) {
+                return null;
+            }
+        }
+
+        recentPositions.push([x, y, z]);
+        if (recentPositions.length > 5000) recentPositions.shift();
+        
+        return new THREE.Vector3(x, y, z);
     }
 
     function addDebris(type, count = 1) {
         for (let i = 0; i < count; i++) {
-            if (debris.length >= 1500) break;
+            if (debris.length >= config.maxDebris) break;
 
             let color, size;
-            if (type === 'failed') {
-                color = 0xb96596;
-                size = 0.13;
-            } else if (type === 'collision') {
-                color = 0xb9993a;
-                size = 0.09;
-            } else {
-                color = 0x30b18b;
-                size = 0.10;
+            switch (type) {
+                case 'failed':
+                    color = 0xb96596;
+                    size = config.sizes.failed;
+                    break;
+                case 'collision':
+                    color = 0xb9993a;
+                    size = config.sizes.collision;
+                    break;
+                default:
+                    color = 0x30b18b;
+                    size = config.sizes.operational;
             }
 
-            const geo = new THREE.SphereGeometry(size, 10, 10);
-            const mat = new THREE.MeshLambertMaterial({ color });
-            const sphere = new THREE.Mesh(geo, mat);
+            const geometry = new THREE.SphereGeometry(size, 10, 10);
+            const material = new THREE.MeshLambertMaterial({ color });
+            const sphere = new THREE.Mesh(geometry, material);
 
-            const radius = 6 + 0.9 + Math.random() * 2;
-            const theta = Math.random() * Math.PI * 2;
-            const phi = Math.acos(Math.random() * 2 - 1);
+            const randomBand = Math.random();
+            let altitude;
+            if (randomBand < 0.75) {
+                altitude = 0.9 + Math.random() * 1.6;
+            } else if (randomBand < 0.92) {
+                altitude = 3 + Math.random() * 2;
+            } else {
+                altitude = 5 + Math.random() * 3;
+            }
 
-            sphere.userData = {
-                type,
-                speed: 0.003 / (radius - 6 + 1),
-                angle: theta,
-                phi,
-                radius
-            };
+            const orbitRadius = 6 + altitude;
+            let position = null;
+            let attempts = 0;
 
-            sphere.position.x = radius * Math.sin(phi) * Math.cos(theta);
-            sphere.position.y = radius * Math.sin(phi) * Math.sin(theta);
-            sphere.position.z = radius * Math.cos(phi);
+            while (!position && attempts < 12) {
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(Math.random() * 2 - 1);
+                position = tryPlaceDebris(orbitRadius, phi, theta);
+                
+                if (position) {
+                    sphere.userData = {
+                        type,
+                        speed: 0.003 / (altitude + 1),
+                        angle: theta,
+                        phi,
+                        radius: orbitRadius
+                    };
+                }
+                attempts++;
+            }
 
+            if (!position) continue;
+
+            sphere.position.copy(position);
             scene.add(sphere);
             debris.push(sphere);
         }
     }
 
     function animate() {
-        const dt = clock.getDelta();
-        acc += dt;
+        if (!renderer || !scene || !camera) {
+            requestAnimationFrame(animate);
+            return;
+        }
+
+        const deltaTime = clock.getDelta();
+        accumulator += deltaTime;
 
         earth.rotation.y += 0.00055;
+        rimGlow.rotation.copy(earth.rotation);
+        if (stars) stars.rotation.y -= 0.0001;
 
-        debris.forEach(d => {
-            d.userData.angle += d.userData.speed;
-            d.position.x = d.userData.radius * Math.sin(d.userData.phi) * Math.cos(d.userData.angle);
-            d.position.y = d.userData.radius * Math.sin(d.userData.phi) * Math.sin(d.userData.angle);
-            d.position.z = d.userData.radius * Math.cos(d.userData.phi);
+        debris.forEach(debrisObj => {
+            const data = debrisObj.userData;
+            data.angle += data.speed;
+            
+            debrisObj.position.x = data.radius * Math.sin(data.phi) * Math.cos(data.angle);
+            debrisObj.position.y = data.radius * Math.sin(data.phi) * Math.sin(data.angle);
+            debrisObj.position.z = data.radius * Math.cos(data.phi);
         });
 
         if (isPlaying) {
-            while (acc >= YEAR_STEP_S) {
-                acc -= YEAR_STEP_S;
-                if (currentYear < 2025) {
+            while (accumulator >= config.yearStepSeconds) {
+                accumulator -= config.yearStepSeconds;
+                
+                if (currentYear < config.endYear) {
                     currentYear++;
                     updateYear();
                 } else {
                     isPlaying = false;
-                    document.getElementById('sam2-play').textContent = 'Done';
+                    document.getElementById('debris-play-btn').textContent = 'Done';
                     break;
                 }
             }
@@ -200,65 +367,130 @@ function initSamyogita2() {
         requestAnimationFrame(animate);
     }
 
-    function updateYear() {
-        document.getElementById('sam2-year').textContent = currentYear;
+    function toggleStatVisibility(id, isVisible) {
+        const element = document.getElementById(id);
+        if (element) element.style.display = isVisible ? '' : 'none';
+    }
 
-        const yearRows = spaceData.filter(d => d.year === currentYear);
-        yearRows.forEach(d => {
-            if (d.failed) {
-                addDebris('failed', 3);
-                failedMissions++;
-                wastedMoney += d.cost;
-                totalDebris += 3;
+    function updateHudVisibility() {
+        toggleStatVisibility('debris-stat-failed', stats.failedMissions > 0);
+        toggleStatVisibility('debris-stat-spent', stats.spentMoney > 0.00001);
+        toggleStatVisibility('debris-stat-waste', stats.wastedMoney > 0.00001);
+    }
+
+    function updateLegendVisibility() {
+        const failedLegend = document.getElementById('debris-legend-failed');
+        if (failedLegend) {
+            failedLegend.style.display = stats.failedMissions > 0 ? 'inline-flex' : 'none';
+        }
+    }
+
+    function updateYear() {
+        document.getElementById('debris-year-display').textContent = currentYear;
+
+        const missionsThisYear = spaceData.filter(d => d.year === currentYear);
+
+        missionsThisYear.forEach(mission => {
+            stats.spentMoney += mission.cost;
+
+            if (mission.failed) {
+                addDebris('failed', config.failedDebrisMultiplier);
+                stats.failedMissions++;
+                stats.wastedMoney += mission.cost;
+                stats.totalDebris += config.failedDebrisMultiplier;
             } else {
-                if (Math.random() < 0.5) {
+                if (Math.random() < config.successDebrisMultiplier) {
                     addDebris('operational', 1);
-                    totalDebris += 1;
+                    stats.totalDebris += 1;
                 }
             }
         });
 
-        const t = (currentYear - 2000) / 25;
-        if (Math.random() < (0.18 * t)) {
-            const n = Math.floor(8 + Math.random() * 11);
-            addDebris('collision', n);
-            totalDebris += n;
+        const timeProgress = (currentYear - config.startYear) / (config.endYear - config.startYear);
+        const collisionProbability = config.collisionBaseRate * timeProgress;
+        
+        if (Math.random() < collisionProbability) {
+            const clusterSize = Math.floor(
+                config.collisionClusterMin + 
+                Math.random() * (config.collisionClusterMax - config.collisionClusterMin + 1)
+            );
+            addDebris('collision', clusterSize);
+            stats.totalDebris += clusterSize;
         }
 
-        document.getElementById('sam2-debris').textContent = totalDebris.toLocaleString();
-        document.getElementById('sam2-failed').textContent = failedMissions;
-        document.getElementById('sam2-waste').textContent = '$' + wastedMoney.toFixed(1) + 'B';
+        document.getElementById('debris-debris-count').textContent = stats.totalDebris.toLocaleString();
+        
+        if (stats.failedMissions > 0) {
+            document.getElementById('debris-failed-count').textContent = stats.failedMissions;
+        }
+        if (stats.spentMoney > 0) {
+            document.getElementById('debris-spent-amount').textContent = stats.spentMoney.toFixed(1);
+        }
+        if (stats.wastedMoney > 0) {
+            document.getElementById('debris-waste-amount').textContent = stats.wastedMoney.toFixed(1);
+        }
 
-        const risk = totalDebris < 300 ? 'LOW' : (totalDebris < 1100 ? 'MEDIUM' : 'HIGH');
-        document.getElementById('sam2-risk').textContent = risk;
-        document.getElementById('sam2-risk').style.color = risk === 'HIGH' ? '#ff6b8a' : (risk === 'MEDIUM' ? '#fbbf24' : '#10b981');
+        let riskLevel;
+        if (stats.totalDebris < 300) {
+            riskLevel = 'LOW';
+        } else if (stats.totalDebris < 1100) {
+            riskLevel = 'MEDIUM';
+        } else {
+            riskLevel = 'HIGH';
+        }
+        document.getElementById('debris-risk-level').textContent = riskLevel;
+
+        const progressPercent = ((currentYear - config.startYear) / (config.endYear - config.startYear)) * 100;
+        document.getElementById('debris-topProgressFill').style.width = progressPercent + '%';
+
+        updateHudVisibility();
+        updateLegendVisibility();
     }
 
-    function setupControls() {
-        const playBtn = document.getElementById('sam2-play');
-        playBtn.addEventListener('click', () => {
-            isPlaying = !isPlaying;
-            playBtn.textContent = isPlaying ? 'Pause' : 'Play';
-        });
+    function resetSimulation() {
+        isPlaying = false;
+        document.getElementById('debris-play-btn').textContent = 'Play';
+        
+        accumulator = 0;
+        currentYear = config.startYear;
+        stats = { totalDebris: 0, failedMissions: 0, wastedMoney: 0, spentMoney: 0 };
+        
+        debris.forEach(d => scene.remove(d));
+        debris = [];
+        recentPositions.length = 0;
 
-        document.getElementById('sam2-reset').addEventListener('click', () => {
-            isPlaying = false;
-            playBtn.textContent = 'Play';
-            acc = 0;
-            currentYear = 2000;
-            totalDebris = 0;
-            failedMissions = 0;
-            wastedMoney = 0;
-
-            debris.forEach(d => scene.remove(d));
-            debris = [];
-
-            document.getElementById('sam2-year').textContent = '2000';
-            document.getElementById('sam2-debris').textContent = '0';
-            document.getElementById('sam2-failed').textContent = '0';
-            document.getElementById('sam2-waste').textContent = '$0B';
-            document.getElementById('sam2-risk').textContent = 'LOW';
-            document.getElementById('sam2-risk').style.color = '#10b981';
-        });
+        document.getElementById('debris-year-display').textContent = String(config.startYear);
+        document.getElementById('debris-debris-count').textContent = '0';
+        document.getElementById('debris-failed-count').textContent = '0';
+        document.getElementById('debris-spent-amount').textContent = '0';
+        document.getElementById('debris-waste-amount').textContent = '0';
+        document.getElementById('debris-risk-level').textContent = 'LOW';
+        document.getElementById('debris-topProgressFill').style.width = '0%';
+        
+        updateHudVisibility();
+        updateLegendVisibility();
     }
+
+    const playButton = document.getElementById('debris-play-btn');
+    playButton.addEventListener('click', () => {
+        isPlaying = !isPlaying;
+        playButton.textContent = isPlaying ? 'Pause' : 'Play';
+    });
+
+    document.getElementById('debris-reset-btn').addEventListener('click', resetSimulation);
+
+    (async function initialize() {
+        try {
+            await loadSpaceData();
+            initializeScene();
+            updateHudVisibility();
+            updateLegendVisibility();
+            
+            isPlaying = true;
+            playButton.textContent = 'Pause';
+        } catch (error) {
+            console.error('Debris visualization error:', error);
+            container.innerHTML = `<p style="color:#ff6b8a;text-align:center;padding:40px;">Error: ${error.message}</p>`;
+        }
+    })();
 }
