@@ -76,52 +76,55 @@ function initVisualizationsOnScroll() {
 
                 switch (vizId) {
                     case 'viz-section-1':
-                        if (typeof initManya1 !== 'undefined') initManya1();
-                        else showMissingViz('manya1-viz', 'initManya1()');
+                        if (typeof initVivek1 !== 'undefined') initVivek1();
+                        else showMissingViz('vivek1-viz', 'initVivek1()');
                         break;
                     case 'viz-section-2':
                         if (typeof initManya2 !== 'undefined') initManya2();
                         else showMissingViz('manya2-viz', 'initManya2()');
                         break;
                     case 'viz-section-3':
-                        if (typeof initVivek1 !== 'undefined') initVivek1();
-                        else showMissingViz('vivek1-viz', 'initVivek1()');
-                        break;
-                    case 'viz-section-4':
-                        if (typeof initVivek2 !== 'undefined') initVivek2();
-                        else showMissingViz('vivek2-viz', 'initVivek2()');
-                        break;
-                    case 'viz-section-5':
                         if (typeof initSehas1 !== 'undefined') initSehas1();
                         else showMissingViz('sehas1-viz', 'initSehas1()');
                         break;
-                    case 'viz-section-6':
+                    case 'viz-section-4':
                         if (typeof initSehas2 !== 'undefined') initSehas2();
                         else showMissingViz('sehas2-viz', 'initSehas2()');
                         break;
-                    case 'viz-section-7':
+                    case 'viz-section-5':
+                        if (typeof initRazan2 !== 'undefined') initRazan2();
+                        else showMissingViz('razan2-viz', 'initRazan2()');
+                        break;
+                    case 'viz-section-6':
                         if (typeof initSamyogita1 !== 'undefined') initSamyogita1();
                         else showMissingViz('samyogita1-viz', 'initSamyogita1()');
                         break;
-                    case 'viz-section-8':
+                    case 'viz-section-7':
                         if (typeof initSamyogita2 !== 'undefined') initSamyogita2();
                         else showMissingViz('samyogita2-viz', 'initSamyogita2()');
                         break;
+                    case 'viz-section-8':
+                        if (typeof initManya1 !== 'undefined') initManya1();
+                        else showMissingViz('manya1-viz', 'initManya1()');
+                        break;
                     case 'viz-section-9':
+                        if (typeof initVivek2 !== 'undefined') initVivek2();
+                        else showMissingViz('vivek2-viz', 'initVivek2()');
+                        break;
+                    case 'viz-section-10':
                         if (typeof initRazan1 !== 'undefined') initRazan1();
                         else showMissingViz('razan1-viz', 'initRazan1()');
                         break;
-                    case 'viz-section-10':
+                    case 'viz-section-11':
                         if (typeof initAryan1 !== 'undefined') initAryan1();
                         else showMissingViz('aryan1-viz', 'initAryan1()');
-                        break;
-                    case 'viz-section-11':
-                        if (typeof initRazan2 !== 'undefined') initRazan2();
-                        else showMissingViz('razan2-viz', 'initRazan2()');
                         break;
                     case 'viz-section-12':
                         if (typeof initAryan2 !== 'undefined') initAryan2();
                         else showMissingViz('aryan2-viz', 'initAryan2()');
+                        break;
+                    case 'viz-section-13':
+                        // Epilogue section - no visualization to initialize
                         break;
                 }
 
@@ -130,7 +133,7 @@ function initVisualizationsOnScroll() {
         });
     }, options);
 
-    for (let i = 1; i <= 12; i++) {
+    for (let i = 1; i <= 13; i++) {
         const section = document.getElementById(`viz-section-${i}`);
         if (section) observer.observe(section);
     }
