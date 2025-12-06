@@ -126,6 +126,10 @@ function initVisualizationsOnScroll() {
                         if (typeof initRazan2 !== 'undefined') initRazan2();
                         else showMissingViz('razan2-viz', 'initRazan2()');
                         break;
+                    case 'viz-section-12':
+                        if (typeof initAryan2 !== 'undefined') initAryan2();
+                        else showMissingViz('aryan2-viz', 'initAryan2()');
+                        break;
                 }
 
                 observer.unobserve(entry.target);
@@ -133,7 +137,7 @@ function initVisualizationsOnScroll() {
         });
     }, options);
 
-    for (let i = 1; i <= 11; i++) {
+    for (let i = 1; i <= 12; i++) {
         const section = document.getElementById(`viz-section-${i}`);
         if (section) observer.observe(section);
     }
